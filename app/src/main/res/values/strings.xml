@@ -1,0 +1,364 @@
+<resources>
+    <string name="app_name">Petster</string>
+    <string name="back">Back</string>
+    <string name="adopted">Adopted</string>
+    <string name="crop">Crop</string>
+    <string name="undo">Undo</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="error">Error</string>
+    <string name="update">Update</string>
+
+    <!--  Welcome Screen  -->
+    <string name="welcome_message">Give a furry friend a forever home and adopt a pet today.</string>
+    <string name="get_started">Get Started</string>
+
+    <!--  Home Screen  -->
+    <string name="how_can_help">How can I help?</string>
+    <string name="volunteer">Volunteer</string>
+    <string name="adopt_pet">Adopt pet</string>
+    <string name="choose_pet">Choose a pet</string>
+    <string name="filter">Filter</string>
+    <string name="location">Location</string>
+    <string name="adopt">Adopt</string>
+    <string name="explore_pets">Explore pets</string>
+    <string name="create_post">Create Post</string>
+    <string name="no_pets">There is no pets</string>
+    <string name="no_pets_desc">There is no pets available right now, please try again later.</string>
+    <string name="no_pets_filter">There is no pets with this filter</string>
+    <string name="create_post_desc">Got a pet that needs a loving home? Post it here!</string>
+    <string name="adoption_steps_title">Want to Adopt a Furry Friend?</string>
+    <string name="adoption_steps_intro">Here are the quick steps:</string>
+    <string name="adoption_step_1">1. Browse the pet listings and find the perfect match.</string>
+    <string name="adoption_step_2">2. View pet details and ask questions if needed.</string>
+    <string name="adoption_step_3">3. Follow the adoption process set by the shelter.</string>
+    <string name="adoption_step_4">4. Bring your new companion home!</string>
+    <string name="total_pets">Total Pets</string>
+    <string name="total_views">Pet Views</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="benefit_adoption_title">Why Adopt?</string>
+    <string name="benefit_adoption_item_1">Give a Second Chance: You save a life and provide a loving home.</string>
+    <string name="benefit_adoption_item_2">Find a Loyal Friend: Adopted pets are often incredibly grateful and affectionate.</string>
+    <string name="benefit_adoption_item_3">More Affordable: Adoption fees are generally lower than buying from a breeder.</string>
+    <string name="benefit_adoption_item_4">Support Animal Welfare: You help reduce the problem of pet overpopulation.</string>
+    <string name="benefit_adoption_item_5">Diverse Choices: Find various ages, breeds, and personalities to match your lifestyle.</string>
+
+    <string-array name="home_pet_categories">
+        <item>All</item>
+        <item>Dog</item>
+        <item>Cat</item>
+        <item>Other</item>
+    </string-array>
+
+    <!--  Top App Bar  -->
+    <string name="menu">Menu</string>
+    <string name="profile">Profile</string>
+
+    <!--  Navigation Bar  -->
+    <string name="home">Home</string>
+    <string name="favorite">Favorite</string>
+    <string name="notification">Notification</string>
+    <string name="explore">Explore</string>
+    <string name="article">Article</string>
+    <string name="assistant">Assistant</string>
+
+    <!--  Pet Category  -->
+    <string name="pet_c_all">All</string>
+    <string name="pet_c_dog">Dog</string>
+    <string name="pet_c_cat">Cat</string>
+    <string name="pet_c_other">Other</string>
+
+    <!--  Favorite Screen  -->
+    <string name="favorite_title">Favorite Pets</string>
+    <string name="favorite_empty">No favorite pets yet.</string>
+    <string name="favorite_empty_desc">You can add pets to your favorites by clicking the heart icon on the pet detail page or pet card.</string>
+    <string name="add_favorite_success">Added to favorites</string>
+    <string name="remove_favorite_success">Removed from favorites</string>
+
+    <!--  Notification Screen  -->
+    <string name="notification_title">Notifications</string>
+    <string name="notification_empty">No notifications yet.</string>
+
+    <!--  Authentication  -->
+    <string name="connect_as_volunteer">Connect as Volunteer</string>
+    <string name="connect_as_shelter">Connect as Shelter</string>
+    <string name="connect_desc">You must be connected to an account to become volunteer and adopt pets.</string>
+    <string name="connect">Connect</string>
+
+    <!--  Profile Screen  -->
+    <string name="your_profile">Your Profile</string>
+    <string name="update_profile">Update Profile</string>
+    <string name="profile_settings">Profile Settings</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="your_pets">Your Pets</string>
+    <string name="change_email">Change Email</string>
+    <string name="logout">Logout</string>
+
+    <!--  Pet Screen  -->
+    <string name="volunteer_detail">Volunteer Detail</string>
+    <string name="coloration">Coloration</string>
+    <string name="vaccinated">Vaccinated</string>
+    <string name="vaccinated_yes">Yes</string>
+    <string name="vaccinated_no">No</string>
+    <string name="breed">Breed</string>
+    <string name="size">Size</string>
+    <string name="gender">Gender</string>
+    <string name="weight">Weight</string>
+    <string name="weight_value">%s %s</string>
+    <string name="volunteer_information">Volunteer Information</string>
+    <string name="name">Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
+    <string name="address">Full Address</string>
+    <string name="adopt_fee">Adopt fee</string>
+    <string name="auth_adopt_needed">You must be connected as shelter to adopt this pet.</string>
+    <string name="your_pet_empty">No pets yet.</string>
+    <string name="your_pet_empty_desc">You can add pets by clicking the create post.</string>
+    <string name="your_pet_empty_error">An internal error occurred while handling your pet data. Please try again later.</string>
+    <string name="update_pet">Update Pet</string>
+    <string name="delete_pet">Delete Pet</string>
+    <string name="error_volunteer_pet">An internal error occurred while handling volunteer data.</string>
+    <string name="delete_pet_confirmation">Are you sure you want to delete this pet? This action cannot be undone.</string>
+    <string name="delete_pet_success">Pet deleted successfully</string>
+    <string name="set_as_adopted">Set as Adopted</string>
+    <string name="set_as_available">Set as Available</string>
+
+    <!--  Connect Screen  -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="submit">Submit</string>
+    <string name="password">Password</string>
+    <string name="email_invalid">Email is invalid (ex. john@mail.com)</string>
+    <string name="phone_number_invalid">Phone number is invalid (ex. 08123456789)</string>
+    <string name="password_not_long_enough">Password must have min. 6 characters</string>
+    <string name="password_not_enough_uppercase">Password must have min. 1 uppercase character</string>
+    <string name="password_not_enough_digits">Password must have min. 1 digit character</string>
+    <string name="field_required">%s is required</string>
+
+    <!--  No Internet  -->
+    <string name="no_internet">No Internet Connection</string>
+    <string name="no_internet_desc">It seems you\'re offline, please check your internet connection and try again.</string>
+    <string name="retry">Retry</string>
+
+    <!--  New Pet Screen  -->
+    <string name="post">Post</string>
+    <string name="post_pet">Post a Pet</string>
+    <string name="photos">Photos</string>
+    <string name="pet_name">Pet Name</string>
+    <string name="pet_age">Pet Age</string>
+    <string name="add_photo">Add photo</string>
+    <string name="pet_age_unit">Age Unit</string>
+    <string name="pet_weight_unit">Weight Unit</string>
+    <string name="pet_category">Pet Category</string>
+    <string name="pet_gender">Pet Gender</string>
+    <string name="pet_color">Pet Color</string>
+    <string name="pet_size">Pet Size</string>
+    <string name="add_item">Add item</string>
+    <string name="pet_disabilities">Pet Disabilities</string>
+    <string name="pet_weight">Pet Weight</string>
+    <string name="pet_vaccinated">Pet Vaccinated</string>
+    <string name="pet_behaviour">Pet Behaviour</string>
+    <string name="delete_photo">Delete Photo</string>
+    <string name="change_photo">Change Photo</string>
+    <string name="set_as_cover">Set as Cover</string>
+    <string name="cover">Cover</string>
+    <string name="adopt_fee_empty">Fill in the blank if you want to make it free</string>
+
+    <!--  Article Screen  -->
+    <string name="article_1_title">Choosing the Right Pet for Your Lifestyle</string>
+    <string name="article_2_title">Preparing Your Home for a New Pet</string>
+    <string name="article_3_title">The First Few Days with Your Adopted Pet</string>
+    <string name="article_4_title">Basic Pet Care Essentials</string>
+    <string name="article_5_title">Understanding Pet Adoption Fees</string>
+    <string name="article_1_content">Bringing a pet home is a long-term commitment. Before falling in love with a cute face, honestly assess your lifestyle.\n\nConsider your living situation (apartment vs. house, space available), your daily activity level (active vs. sedentary), and how much time you can realistically dedicate each day to exercise, grooming, training, and companionship.\n\nFactor in your budget for food, vet care, supplies, and potential emergencies. Also, consider your family members or roommates, including children or existing pets. Research different breeds or species to find one whose energy level, temperament, and care needs genuinely match your capacity.</string>
+    <string name="article_2_content">Welcome your new companion into a safe and comfortable environment. Start by pet-proofing: secure loose wires, remove toxic plants and chemicals, put away small objects they might swallow, and ensure window screens are secure.\n\nDesignate a specific, quiet area for your pet with their bed or crate, food, and water bowls. Gather all necessary supplies *before* they arrive: appropriate food, bowls, collar/harness and leash (if applicable), litter box and litter (for cats), grooming tools, toys for enrichment, and cleaning supplies for accidents.\n\nHaving everything ready minimizes stress for both you and your new pet.</string>
+    <string name="article_3_content">The first few days are crucial for building trust and helping your new pet adjust. Expect them to be shy, anxious, or overly excited. Maintain a calm and quiet environment, limiting visitors initially. Introduce them gradually to different parts of the house.\n\nEstablish a consistent routine for feeding, potty breaks or litter box checks, walks (if applicable), and quiet time right away. Use positive reinforcement for good behavior.\n\nSupervise interactions with children or other pets closely. Be patient; it takes time for a pet to feel secure and understand the rules of their new home. Watch for signs of stress and give them space when needed.</string>
+    <string name="article_4_content">Providing proper care is essential for your pet\'s health and happiness. This starts with balanced nutrition tailored to their age, breed, and health status – consult your vet for recommendations and avoid feeding harmful human foods.\n\nRegular grooming, including brushing, bathing (as needed), nail trims, and dental care, prevents health issues.\n\nEnsure they get adequate daily exercise appropriate for their species and energy level to maintain physical and mental well-being. Don\'t forget regular veterinary check-ups for vaccinations, parasite prevention, and early detection of potential health problems. Basic training and socialization are also key components of responsible pet ownership.</string>
+    <string name="article_5_content">Adoption fees might seem like a purchase price, but they serve a vital purpose. These fees rarely cover the full cost the shelter or rescue group invested in the animal, but they help offset expenses like spaying or neutering, initial vaccinations (like rabies, distemper), deworming, flea/tick treatment, microchipping for identification, and basic veterinary checks.\n\nThe fee also supports the organization\'s operational costs, allowing them to rescue more animals in need. Think of it not as buying a pet, but as an investment in your new companion\'s initial health care and a contribution towards the welfare of other homeless animals.\n\nFees can vary based on the organization, location, and the specific animal.</string>
+    <string name="article_image_desc">Image related to the article topic</string>
+    <string name="pet_tips_screen_title">Pet Articles</string>
+    <string name="article_not_found">Article not found.</string>
+
+    <!--  Assistant Screen  -->
+    <string name="default_prompt_assistant">Anda adalah asisten chat dari aplikasi Petster. Anda bertugas membantu pengguna terkait shelter hewan. Selalu jawab sapaan atau salam dari pengguna dengan ramah. Jika pertanyaannya mengenai hewan peliharaan, jawablah dengan jelas dan ringkas. Jika pertanyaannya di luar topik hewan peliharaan, jelaskan dengan sopan bahwa Anda hanya bisa membantu dengan pertanyaan seputar hewan peliharaan.\nPertanyaan Pengguna:\n</string>
+    <string name="ask_about_pet">Ask about pet</string>
+    <string name="send_message">Send Message</string>
+    <string name="delete_history">Delete History</string>
+
+    <!--  Loading  -->
+    <string name="post_loading">Your post is currently being uploaded. Please wait a moment.</string>
+    <string name="update_pet_loading">Your pet is currently being updated. Please wait a moment.</string>
+    <string name="post_failed">Sorry, the post upload failed. Please try again.</string>
+
+    <!--  Internet Error  -->
+    <string name="internet_error">Sorry, there seems to be an issue with the internet connection. Please check your network settings and try again.</string>
+    <string name="fields_error">Please fill in all required fields marked with an asterisk (*) and upload at least one photo</string>
+
+    <string-array name="pet_gender">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="pet_categories">
+        <item>Dog</item>
+        <item>Cat</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="pet_age_units">
+        <item>Days</item>
+        <item>Weeks</item>
+        <item>Months</item>
+        <item>Years</item>
+    </string-array>
+
+    <string-array name="pet_weight_units">
+        <item>Kilogram</item>
+        <item>Gram</item>
+        <item>Ons</item>
+        <item>Pound</item>
+    </string-array>
+
+    <string-array name="pet_size">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+    </string-array>
+
+    <string-array name="pet_special_diets">
+        <item>Grain-Free</item>
+        <item>High Protein</item>
+        <item>Low Calorie</item>
+        <item>Allergen-Free</item>
+        <item>High Fiber</item>
+        <item>Low Fat</item>
+        <item>Senior Diet</item>
+        <item>Renal Support</item>
+        <item>Sensitive Stomach</item>
+        <item>Hydrolyzed Protein</item>
+        <item>Cancer Support</item>
+        <item>Anal Gland Support</item>
+        <item>Limited Ingredient</item>
+        <item>Joint Support</item>
+        <item>Dental Health</item>
+        <item>Skin and Coat</item>
+        <item>Urinary Health</item>
+        <item>Weight Management</item>
+        <item>Digestive Support</item>
+        <item>Heart Health</item>
+        <item>Diabetic</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="pet_colors">
+        <item>Black</item>
+        <item>White</item>
+        <item>Brown</item>
+        <item>Gray</item>
+        <item>Red</item>
+        <item>Cream</item>
+        <item>Golden</item>
+        <item>Tan</item>
+        <item>Brindle</item>
+        <item>Spotted</item>
+        <item>Calico</item>
+        <item>Tabby</item>
+        <item>Tortoiseshell</item>
+        <item>Blue</item>
+        <item>Lilac</item>
+        <item>Chocolate</item>
+        <item>Silver</item>
+        <item>Merle</item>
+        <item>Tricolor</item>
+        <item>Bicolor</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="pet_behaviors">
+        <item>Playful</item>
+        <item>Friendly</item>
+        <item>Curious</item>
+        <item>Lazy</item>
+        <item>Protective</item>
+        <item>Loyal</item>
+        <item>Energetic</item>
+        <item>Affectionate</item>
+        <item>Independent</item>
+        <item>Vocal</item>
+        <item>Shy</item>
+        <item>Calm</item>
+        <item>Mischievous</item>
+        <item>Intelligent</item>
+        <item>Obedient</item>
+        <item>Adventurous</item>
+        <item>Sharp</item>
+    </string-array>
+
+    <string-array name="pet_disabilities">
+        <item>Blind</item>
+        <item>Deaf</item>
+        <item>Paralyzed</item>
+        <item>Amputee</item>
+        <item>Epilepsy</item>
+        <item>Diabetes</item>
+        <item>Heart Disease</item>
+        <item>Respiratory Issues</item>
+        <item>Skin Conditions</item>
+        <item>Allergies</item>
+        <item>Arthritis</item>
+        <item>Hip Dysplasia</item>
+        <item>Kidney Disease</item>
+        <item>Liver Disease</item>
+        <item>Cognitive Dysfunction</item>
+    </string-array>
+
+    <string-array name="confirm">
+        <item>Yes</item>
+        <item>No</item>
+    </string-array>
+
+    <!--  Authentication Message  -->
+    <string name="login_volunteer_success">Successfully logged in as volunteer</string>
+    <string name="login_shelter_success">Successfully logged in as shelter</string>
+    <string name="register_volunteer_success">Successfully registered as volunteer</string>
+    <string name="register_shelter_success">Successfully registered as shelter</string>
+    <string name="register_volunteer_failed">Failed to register as volunteer</string>
+    <string name="register_shelter_failed">Failed to register as shelter</string>
+    <string name="login_volunteer_failed">Failed to login as volunteer</string>
+    <string name="login_shelter_failed">Failed to login as shelter</string>
+    <string name="error_login_invalid_credentials">Incorrect email or password.</string>
+    <string name="error_login_internal">An internal error occurred while processing login data.</string>
+    <string name="error_register_internal">An internal error occurred while processing register data.</string>
+    <string name="error_volunteer_already_exists">Volunteer is already exists</string>
+    <string name="error_shelter_already_exists">Shelter is already exists</string>
+    <string name="update_profile_success">Successfully updated your profile</string>
+    <string name="update_profile_failed">Failed to update your profile</string>
+
+    <!-- Dashboard Error Messages -->
+    <string name="error_empty_volunteer_id">Volunteer ID cannot be empty</string>
+    <string name="dashboard_data_failed">Failed to load dashboard data. Please try again later</string>
+    <string name="dashboard_error_internal">An internal error occurred while handling dashboard data. Please try again later.</string>
+
+    <!--  Pet Message  -->
+    <string name="pet_list_available_empty">No Pets Available</string>
+    <string name="pet_list_available_empty_message">There are currently no pets available. Please check back later!</string>
+    <string name="pet_error_network">Network error. Could not process pet data. Please check your internet connection.</string>
+    <string name="pet_error_internal">An internal error occurred while handling pet data. Please try again later.</string>
+
+    <!-- Pet Update Messages -->
+    <string name="pet_update_success">Pet information updated successfully</string>
+    <string name="pet_update_error">Failed to update pet information</string>
+    <string name="pet_not_found">Pet not found</string>
+    <string name="pet_update_error_internal">An internal error occurred while updating pet information</string>
+
+    <!-- Pet Delete Messages -->
+    <string name="pet_delete_success">Pet deleted successfully</string>
+    <string name="pet_delete_error">Failed to delete pet</string>
+    <string name="pet_delete_error_internal">An internal error occurred while deleting pet</string>
+    <string name="error_empty_pet_id">Pet ID cannot be empty</string>
+
+    <!--  Other Message  -->
+    <string name="error_unknown">An unknown error occurred.</string>
+    <string name="auth_needed">You need to connect as volunteer or shelter</string>
+    <string name="error_failed_to_open_whatsapp">Failed to open WhatsApp. Please try again later.</string>
+</resources>
