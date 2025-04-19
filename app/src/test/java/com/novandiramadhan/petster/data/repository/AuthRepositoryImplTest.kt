@@ -3,10 +3,12 @@ package com.novandiramadhan.petster.data.repository
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.FirebaseKeys
 import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.domain.model.Volunteer
@@ -23,10 +25,13 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
+import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -69,8 +74,6 @@ class AuthRepositoryImplTest {
     @BeforeEach
     fun setUp() {
         authRepository = AuthRepositoryImpl(mockFirebaseAuth, mockFirestore)
-        whenever(mockFirestore.collection(any())).thenReturn(mockCollectionReference)
-        whenever(mockCollectionReference.document(any())).thenReturn(mockDocumentReference)
     }
 
     @Nested
@@ -80,6 +83,9 @@ class AuthRepositoryImplTest {
         @Test
         @DisplayName("registerVolunteer - Success - Should emit Loading then Success")
         fun registerVolunteer_success_emitsLoadingAndSuccess() = runTest {
+            whenever(mockFirestore.collection(any())).thenReturn(mockCollectionReference)
+            whenever(mockCollectionReference.document(any())).thenReturn(mockDocumentReference)
+
             whenever(mockFirebaseUser.uid).thenReturn(testUserId)
             whenever(mockAuthResult.user).thenReturn(mockFirebaseUser)
             whenever(mockFirebaseAuth.createUserWithEmailAndPassword(testVolunteerForm.email, testVolunteerForm.password))
@@ -117,6 +123,55 @@ class AuthRepositoryImplTest {
                         vol.address == testVolunteerForm.address
             })
             verifyNoMoreInteractions(mockFirebaseAuth, mockFirestore, mockCollectionReference, mockDocumentReference)
+        }
+
+        @Test
+        @DisplayName("registerVolunteer - Invalid Email - Should emit Loading then Error")
+        fun registerVolunteer_invalidEmail_emitsLoadingAndError() = runTest {
+            val exception = mock<FirebaseAuthInvalidCredentialsException> {
+                on { message } doReturn "The email address is badly formatted."
+            }
+
+            whenever(mockFirebaseAuth.createUserWithEmailAndPassword(testEmail, testPassword))
+                .thenReturn(Tasks.forException(exception))
+
+            val emissions = authRepository.registerVolunteer(testVolunteerForm).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Error")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Error, "Second emission should be Error")
+
+            val errorResult = emissions[1] as Resource.Error<VolunteerAuthResult>
+            assertEquals(exception.message, errorResult.message, "Error message should match exception message")
+            assertNotNull(errorResult.messageResId, "Error should have a resource ID")
+            assertEquals(R.string.email_invalid, errorResult.messageResId, "Error resource ID should be for invalid email")
+
+            verify(mockFirebaseAuth).createUserWithEmailAndPassword(testEmail, testPassword)
+            verifyNoInteractions(mockFirestore)
+        }
+
+        @Test
+        @DisplayName("registerVolunteer - Null User - Should emit Loading then Error")
+        fun registerVolunteer_nullUser_emitsLoadingAndError() = runTest {
+            val authResultWithNullUser = mock<AuthResult> {
+                on { user } doReturn null
+            }
+
+            whenever(mockFirebaseAuth.createUserWithEmailAndPassword(testEmail, testPassword))
+                .thenReturn(Tasks.forResult(authResultWithNullUser))
+
+            val emissions = authRepository.registerVolunteer(testVolunteerForm).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Error")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Error, "Second emission should be Error")
+
+            val errorResult = emissions[1] as Resource.Error<VolunteerAuthResult>
+            assertEquals("Failed to get user ID", errorResult.message, "Error message should match expected message")
+            assertEquals(R.string.error_register_internal, errorResult.messageResId, "Error resource ID should be for internal error")
+
+            verify(mockFirebaseAuth).createUserWithEmailAndPassword(testEmail, testPassword)
+            verifyNoInteractions(mockFirestore)
         }
     }
 }
