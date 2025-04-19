@@ -8,10 +8,14 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.FirebaseKeys
 import com.novandiramadhan.petster.data.resource.Resource
+import com.novandiramadhan.petster.domain.model.Shelter
+import com.novandiramadhan.petster.domain.model.ShelterAuthResult
 import com.novandiramadhan.petster.domain.model.ShelterForm
 import com.novandiramadhan.petster.domain.model.Volunteer
 import com.novandiramadhan.petster.domain.model.VolunteerAuthResult
@@ -184,7 +188,7 @@ class AuthRepositoryImplTest {
         @Test
         @DisplayName("loginVolunteer - Success - Should emit Loading then Success")
         fun loginVolunteer_success_emitsLoadingAndSuccess() = runTest {
-            val documentSnapshot = mock<com.google.firebase.firestore.DocumentSnapshot> {
+            val documentSnapshot = mock<DocumentSnapshot> {
                 on { exists() } doReturn true
                 on { toObject(Volunteer::class.java) } doReturn Volunteer(
                     uuid = testUserId,
@@ -201,7 +205,7 @@ class AuthRepositoryImplTest {
             whenever(mockFirestore.collection(FirebaseKeys.VOLUNTEER_COLLECTION)).thenReturn(mockCollectionReference)
             whenever(mockCollectionReference.document(testUserId)).thenReturn(mockDocumentReference)
             whenever(mockDocumentReference.get()).thenReturn(Tasks.forResult(documentSnapshot))
-            whenever(mockDocumentReference.set(any(), any<com.google.firebase.firestore.SetOptions>()))
+            whenever(mockDocumentReference.set(any(), any<SetOptions>()))
                 .thenReturn(Tasks.forResult(null))
 
             val emissions = authRepository.loginVolunteer(testEmail, testPassword).toList()
@@ -222,7 +226,7 @@ class AuthRepositoryImplTest {
             verify(mockFirestore, org.mockito.Mockito.times(2)).collection(FirebaseKeys.VOLUNTEER_COLLECTION)
             verify(mockCollectionReference, org.mockito.Mockito.times(2)).document(testUserId)
             verify(mockDocumentReference).get()
-            verify(mockDocumentReference).set(any(), any<com.google.firebase.firestore.SetOptions>())
+            verify(mockDocumentReference).set(any(), any<SetOptions>())
         }
 
         @Test
@@ -348,7 +352,56 @@ class AuthRepositoryImplTest {
                 "Error resource ID should be for internal error")
 
             verify(mockFirebaseAuth).createUserWithEmailAndPassword(testShelterForm.email, testShelterForm.password)
-            verifyNoInteractions(mockFirestore) // Firestore shouldn't be accessed when auth fails
+            verifyNoInteractions(mockFirestore)
+        }
+    }
+
+    @Nested
+    @DisplayName("Login Shelter Tests")
+    inner class LoginShelterTests {
+
+        @Test
+        @DisplayName("loginShelter - Success - Should emit Loading then Success")
+        fun loginShelter_success_emitsLoadingAndSuccess() = runTest {
+            val documentSnapshot = mock<DocumentSnapshot> {
+                on { exists() } doReturn true
+                on { toObject(Shelter::class.java) } doReturn Shelter(
+                    uuid = testUserId,
+                    name = "Test Shelter",
+                    phoneNumber = "1234567890",
+                    address = "456 Shelter Street"
+                )
+            }
+
+            whenever(mockFirebaseUser.uid).thenReturn(testUserId)
+            whenever(mockAuthResult.user).thenReturn(mockFirebaseUser)
+            whenever(mockFirebaseAuth.signInWithEmailAndPassword(testEmail, testPassword))
+                .thenReturn(Tasks.forResult(mockAuthResult))
+            whenever(mockFirestore.collection(FirebaseKeys.SHELTER_COLLECTION)).thenReturn(mockCollectionReference)
+            whenever(mockCollectionReference.document(testUserId)).thenReturn(mockDocumentReference)
+            whenever(mockDocumentReference.get()).thenReturn(Tasks.forResult(documentSnapshot))
+            whenever(mockDocumentReference.set(any(), any<SetOptions>()))
+                .thenReturn(Tasks.forResult(null))
+
+            val emissions = authRepository.loginShelter(testEmail, testPassword).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Success")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Success, "Second emission should be Success")
+
+            val successResult = emissions[1] as Resource.Success<ShelterAuthResult>
+            val shelterResult = successResult.data?.shelter
+
+            assertEquals(testUserId, shelterResult?.uuid, "UUID should match")
+            assertEquals(testEmail, shelterResult?.email, "Email should be updated to login email")
+            assertEquals("Test Shelter", shelterResult?.name, "Name should match retrieved data")
+            assertTrue(successResult.data?.isLoginType == true, "isLoginType should be true for login")
+
+            verify(mockFirebaseAuth).signInWithEmailAndPassword(testEmail, testPassword)
+            verify(mockFirestore, org.mockito.Mockito.times(2)).collection(FirebaseKeys.SHELTER_COLLECTION)
+            verify(mockCollectionReference, org.mockito.Mockito.times(2)).document(testUserId)
+            verify(mockDocumentReference).get()
+            verify(mockDocumentReference).set(any(), any<SetOptions>())
         }
     }
 }
