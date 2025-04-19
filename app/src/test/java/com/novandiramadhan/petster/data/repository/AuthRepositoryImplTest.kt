@@ -217,11 +217,35 @@ class AuthRepositoryImplTest {
             assertTrue(successResult.data?.isLoginType == true, "isLoginType should be true for login")
 
             verify(mockFirebaseAuth).signInWithEmailAndPassword(testEmail, testPassword)
-            // Use times(2) since collection() is called twice in the implementation
             verify(mockFirestore, org.mockito.Mockito.times(2)).collection(FirebaseKeys.VOLUNTEER_COLLECTION)
             verify(mockCollectionReference, org.mockito.Mockito.times(2)).document(testUserId)
             verify(mockDocumentReference).get()
             verify(mockDocumentReference).set(any(), any<com.google.firebase.firestore.SetOptions>())
+        }
+
+        @Test
+        @DisplayName("loginVolunteer - Invalid Credentials - Should emit Loading then Error")
+        fun loginVolunteer_invalidCredentials_emitsLoadingAndError() = runTest {
+            val exception = mock<FirebaseAuthInvalidCredentialsException> {
+                on { message } doReturn "The password is invalid or the user does not have a password."
+            }
+
+            whenever(mockFirebaseAuth.signInWithEmailAndPassword(testEmail, testPassword))
+                .thenReturn(Tasks.forException(exception))
+
+            val emissions = authRepository.loginVolunteer(testEmail, testPassword).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Error")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Error, "Second emission should be Error")
+
+            val errorResult = emissions[1] as Resource.Error<VolunteerAuthResult>
+            assertEquals(exception.message, errorResult.message, "Error message should match exception message")
+            assertEquals(R.string.error_login_invalid_credentials, errorResult.messageResId,
+                "Error resource ID should be for invalid credentials")
+
+            verify(mockFirebaseAuth).signInWithEmailAndPassword(testEmail, testPassword)
+            verifyNoInteractions(mockFirestore) // Firestore shouldn't be accessed when auth fails
         }
     }
 }
