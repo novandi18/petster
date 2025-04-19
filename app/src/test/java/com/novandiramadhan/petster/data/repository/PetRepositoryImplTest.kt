@@ -14,6 +14,7 @@ import com.novandiramadhan.petster.common.FirebaseKeys
 import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.domain.model.Pet
 import com.novandiramadhan.petster.domain.model.PetResult
+import com.novandiramadhan.petster.domain.model.PetView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -28,6 +29,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.whenever
 
 @ExtendWith(MockitoExtension::class)
@@ -233,5 +235,58 @@ class PetRepositoryImplTest {
 
         val error = results[1] as Resource.Error
         assertEquals("Pet not found", error.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("addViewedPet creates new record when no existing view")
+    fun addViewedPet_createsNewRecordWhenNoExistingView() = runTest {
+        val petId = "pet123"
+        val shelterId = "shelter456"
+        val petView = PetView(petId = petId, shelterId = shelterId)
+
+        val collectionReference = Mockito.mock(CollectionReference::class.java)
+        val query = Mockito.mock(Query::class.java)
+        val querySnapshot = Mockito.mock(QuerySnapshot::class.java)
+        val documentReference = Mockito.mock(DocumentReference::class.java)
+
+        whenever(firestore.collection(FirebaseKeys.PET_VIEWS_COLLECTION)).thenReturn(collectionReference)
+        whenever(collectionReference.whereEqualTo("petId", petId)).thenReturn(query)
+        whenever(query.whereEqualTo("shelterId", shelterId)).thenReturn(query)
+        whenever(query.limit(1)).thenReturn(query)
+        whenever(query.get()).thenReturn(Tasks.forResult(querySnapshot))
+        whenever(querySnapshot.documents).thenReturn(emptyList())
+        whenever(collectionReference.document()).thenReturn(documentReference)
+        whenever(documentReference.set(any())).thenReturn(Tasks.forResult(null))
+
+        val results = repository.addViewedPet(petView).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Success)
+
+        Mockito.verify(documentReference).set(argThat { arg ->
+            arg is PetView &&
+                    arg.petId == petId &&
+                    arg.shelterId == shelterId &&
+                    arg.timestamp != null
+        })
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("addViewedPet returns error with empty parameters")
+    fun addViewedPet_returnsErrorWithEmptyParameters() = runTest {
+        val petView = PetView(petId = "", shelterId = null)
+        val results = repository.addViewedPet(petView).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Error)
+
+        val error = results[1] as Resource.Error
+        assertEquals("Pet ID and Shelter ID cannot be empty", error.message)
+
+        Mockito.verifyNoInteractions(firestore)
     }
 }
