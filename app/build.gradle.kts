@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.release
 import java.util.Properties
 import java.io.FileInputStream
 
@@ -13,6 +12,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
 }
 
+val mockitoAgent = configurations.create("mockitoAgent")
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists() && localPropertiesFile.isFile) {
@@ -66,6 +66,13 @@ android {
         compose = true
         buildConfig = true
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+            it.jvmArgs("-javaagent:${mockitoAgent.asPath}")
+        }
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -83,6 +90,7 @@ dependencies {
     implementation(libs.dagger.hilt)
     implementation(libs.navigation.hilt)
     implementation(libs.firebase.firestore)
+    testImplementation(libs.junit.jupiter)
     ksp(libs.hilt.compiler)
     ksp(libs.hilt.android.compiler)
 
@@ -123,6 +131,17 @@ dependencies {
     implementation(libs.gen.ai)
 
     testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.junit.jupiter)
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -130,4 +149,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("reflect"))
+    testImplementation(kotlin("test"))
 }
