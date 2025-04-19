@@ -451,4 +451,111 @@ class PetRepositoryImplTest {
 
         Mockito.verifyNoInteractions(firestore)
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("togglePetAdopted returns success when pet is set to adopted")
+    fun togglePetAdopted_returnsSuccessWhenSetToAdopted() = runTest {
+        val petId = "pet123"
+        val isAdopted = true
+
+        val documentReference = Mockito.mock(DocumentReference::class.java)
+        val documentSnapshot = Mockito.mock(DocumentSnapshot::class.java)
+        val collectionReference = Mockito.mock(CollectionReference::class.java)
+
+        whenever(firestore.collection(FirebaseKeys.PET_COLLECTION)).thenReturn(collectionReference)
+        whenever(collectionReference.document(petId)).thenReturn(documentReference)
+        whenever(documentReference.get()).thenReturn(Tasks.forResult(documentSnapshot))
+        whenever(documentSnapshot.exists()).thenReturn(true)
+        whenever(documentReference.update("adopted", isAdopted)).thenReturn(Tasks.forResult(null))
+        whenever(context.getString(R.string.set_as_adopted)).thenReturn("Set as Adopted")
+
+        val results = repository.togglePetAdopted(petId, isAdopted).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Success)
+
+        val success = results[1] as Resource.Success
+        assertEquals("Set as Adopted", success.data?.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("togglePetAdopted returns success when pet is set to available")
+    fun togglePetAdopted_returnsSuccessWhenSetToAvailable() = runTest {
+        val petId = "pet123"
+        val isAdopted = false
+
+        val documentReference = Mockito.mock(DocumentReference::class.java)
+        val documentSnapshot = Mockito.mock(DocumentSnapshot::class.java)
+        val collectionReference = Mockito.mock(CollectionReference::class.java)
+
+        whenever(firestore.collection(FirebaseKeys.PET_COLLECTION)).thenReturn(collectionReference)
+        whenever(collectionReference.document(petId)).thenReturn(documentReference)
+        whenever(documentReference.get()).thenReturn(Tasks.forResult(documentSnapshot))
+        whenever(documentSnapshot.exists()).thenReturn(true)
+        whenever(documentReference.update("adopted", isAdopted)).thenReturn(Tasks.forResult(null))
+        whenever(context.getString(R.string.set_as_available)).thenReturn("Set as Available")
+
+        val results = repository.togglePetAdopted(petId, isAdopted).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Success)
+
+        val success = results[1] as Resource.Success
+        assertEquals("Set as Available", success.data?.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("togglePetAdopted returns error when petId is empty")
+    fun togglePetAdopted_returnsErrorWhenPetIdIsEmpty() = runTest {
+        val petId = ""
+        val isAdopted = true
+
+        val results = repository.togglePetAdopted(petId, isAdopted).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Error)
+
+        val error = results[1] as Resource.Error
+        assertEquals("Pet ID cannot be empty", error.message)
+        assertEquals(R.string.error_empty_pet_id, error.messageResId)
+
+        Mockito.verifyNoInteractions(firestore)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("togglePetAdopted returns error when pet is not found")
+    fun togglePetAdopted_returnsErrorWhenPetNotFound() = runTest {
+        val petId = "nonexistent-pet-id"
+        val isAdopted = true
+
+        val petCollectionRef = Mockito.mock(CollectionReference::class.java)
+        val petDocRef = Mockito.mock(DocumentReference::class.java)
+        val petDocSnapshot = Mockito.mock(DocumentSnapshot::class.java)
+
+        whenever(firestore.collection(FirebaseKeys.PET_COLLECTION)).thenReturn(petCollectionRef)
+        whenever(petCollectionRef.document(petId)).thenReturn(petDocRef)
+        whenever(petDocRef.get()).thenReturn(Tasks.forResult(petDocSnapshot))
+        whenever(petDocSnapshot.exists()).thenReturn(false)
+
+        Mockito.lenient().`when`(context.getString(R.string.pet_not_found)).thenReturn("Pet not found")
+
+        val results = repository.togglePetAdopted(petId, isAdopted).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Error)
+
+        val error = results[1] as Resource.Error
+        assertEquals("Pet not found", error.message)
+        assertEquals(R.string.pet_not_found, error.messageResId)
+
+        Mockito.verify(petDocRef, Mockito.never()).update(any<String>(), any<Boolean>())
+    }
 }
