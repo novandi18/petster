@@ -11,6 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.FirebaseKeys
 import com.novandiramadhan.petster.data.resource.Resource
+import com.novandiramadhan.petster.domain.model.ShelterForm
 import com.novandiramadhan.petster.domain.model.Volunteer
 import com.novandiramadhan.petster.domain.model.VolunteerAuthResult
 import com.novandiramadhan.petster.domain.model.VolunteerForm
@@ -245,7 +246,58 @@ class AuthRepositoryImplTest {
                 "Error resource ID should be for invalid credentials")
 
             verify(mockFirebaseAuth).signInWithEmailAndPassword(testEmail, testPassword)
-            verifyNoInteractions(mockFirestore) // Firestore shouldn't be accessed when auth fails
+            verifyNoInteractions(mockFirestore)
+        }
+    }
+
+    @Nested
+    @DisplayName("Register Shelter Tests")
+    inner class RegisterShelterTests {
+
+        private val testShelterForm = ShelterForm(
+            email = testEmail,
+            password = testPassword,
+            name = "Test Shelter",
+            phoneNumber = "1234567890",
+            address = "456 Shelter Street"
+        )
+
+        @Test
+        @DisplayName("registerShelter - Success - Should emit Loading then Success")
+        fun registerShelter_success_emitsLoadingAndSuccess() = runTest {
+            whenever(mockFirestore.collection(FirebaseKeys.SHELTER_COLLECTION)).thenReturn(mockCollectionReference)
+            whenever(mockCollectionReference.document(any())).thenReturn(mockDocumentReference)
+            whenever(mockFirebaseUser.uid).thenReturn(testUserId)
+            whenever(mockAuthResult.user).thenReturn(mockFirebaseUser)
+            whenever(mockFirebaseAuth.createUserWithEmailAndPassword(testShelterForm.email, testShelterForm.password))
+                .thenReturn(Tasks.forResult(mockAuthResult))
+            whenever(mockDocumentReference.set(any()))
+                .thenReturn(Tasks.forResult(null as Void?))
+
+            val emissions = authRepository.registerShelter(testShelterForm).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Success")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Success, "Second emission should be Success")
+
+            val successResult = emissions[1] as Resource.Success
+            assertNotNull(successResult.data, "Success data should not be null")
+
+            val resultData = successResult.data
+            val registeredShelter = resultData.shelter
+
+            assertEquals(testUserId, registeredShelter?.uuid, "Shelter UUID should match")
+            assertEquals(testShelterForm.email, registeredShelter?.email, "Shelter email should match form")
+            assertEquals(testShelterForm.name, registeredShelter?.name, "Shelter name should match form")
+            assertEquals(testShelterForm.phoneNumber, registeredShelter?.phoneNumber, "Shelter phone should match form")
+            assertEquals(testShelterForm.address, registeredShelter?.address, "Shelter address should match form")
+            assertFalse(resultData.isLoginType, "isLoginType should be false for registration")
+
+            verify(mockFirebaseAuth).createUserWithEmailAndPassword(testShelterForm.email, testShelterForm.password)
+            verify(mockFirestore).collection(FirebaseKeys.SHELTER_COLLECTION)
+            verify(mockCollectionReference).document(testUserId)
+            verify(mockDocumentReference).set(any())
+            verifyNoMoreInteractions(mockFirebaseAuth, mockFirestore, mockCollectionReference, mockDocumentReference)
         }
     }
 }
