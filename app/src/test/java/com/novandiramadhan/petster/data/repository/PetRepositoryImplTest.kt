@@ -5,6 +5,10 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
+import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.FirebaseKeys
 import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.domain.model.Pet
@@ -20,6 +24,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
@@ -102,5 +107,62 @@ class PetRepositoryImplTest {
 
         val error = results[1] as Resource.Error
         assertEquals("Network failure", error.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("deletePet returns success when pet is deleted successfully")
+    fun deletePet_returnsSuccessResult() = runTest {
+        val petId = "pet123"
+        val documentReference = Mockito.mock(DocumentReference::class.java)
+        val collectionReference = Mockito.mock(CollectionReference::class.java)
+        val querySnapshot = Mockito.mock(QuerySnapshot::class.java)
+        val query = Mockito.mock(Query::class.java)
+
+        whenever(firestore.collection(FirebaseKeys.PET_COLLECTION)).thenReturn(collectionReference)
+        whenever(collectionReference.document(petId)).thenReturn(documentReference)
+        whenever(documentReference.delete()).thenReturn(Tasks.forResult(null))
+
+        val favoritedCollectionRef = Mockito.mock(CollectionReference::class.java)
+        whenever(firestore.collection(FirebaseKeys.FAVORITED_PET_COLLECTION)).thenReturn(favoritedCollectionRef)
+        whenever(favoritedCollectionRef.whereEqualTo("petId", petId)).thenReturn(query)
+        whenever(query.get()).thenReturn(Tasks.forResult(querySnapshot))
+        whenever(querySnapshot.documents).thenReturn(emptyList())
+        whenever(context.getString(R.string.pet_delete_success)).thenReturn("Pet deleted successfully")
+
+        val results = repository.deletePet(petId).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Success)
+
+        val success = results[1] as Resource.Success
+        assertEquals("Pet deleted successfully", success.data?.message)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("deletePet returns error when deletion fails")
+    fun deletePet_returnsErrorResultOnFailure() = runTest {
+        val petId = "pet123"
+        val documentReference = Mockito.mock(DocumentReference::class.java)
+        val collectionReference = Mockito.mock(CollectionReference::class.java)
+        val exception = FirebaseFirestoreException(
+            "Database connection error",
+            FirebaseFirestoreException.Code.UNAVAILABLE
+        )
+
+        whenever(firestore.collection(FirebaseKeys.PET_COLLECTION)).thenReturn(collectionReference)
+        whenever(collectionReference.document(petId)).thenReturn(documentReference)
+        whenever(documentReference.delete()).thenReturn(Tasks.forException(exception))
+
+        val results = repository.deletePet(petId).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Error)
+
+        val error = results[1] as Resource.Error
+        assertEquals("Database connection error", error.message)
     }
 }
