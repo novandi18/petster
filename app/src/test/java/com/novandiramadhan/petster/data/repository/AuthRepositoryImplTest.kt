@@ -325,5 +325,30 @@ class AuthRepositoryImplTest {
             verify(mockFirebaseAuth).createUserWithEmailAndPassword(testShelterForm.email, testShelterForm.password)
             verifyNoInteractions(mockFirestore)
         }
+
+        @Test
+        @DisplayName("registerShelter - Null User - Should emit Loading then Error")
+        fun registerShelter_nullUser_emitsLoadingAndError() = runTest {
+            val authResultWithNullUser = mock<AuthResult> {
+                on { user } doReturn null
+            }
+
+            whenever(mockFirebaseAuth.createUserWithEmailAndPassword(testShelterForm.email, testShelterForm.password))
+                .thenReturn(Tasks.forResult(authResultWithNullUser))
+
+            val emissions = authRepository.registerShelter(testShelterForm).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Error")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Error, "Second emission should be Error")
+
+            val errorResult = emissions[1] as Resource.Error
+            assertEquals("Failed to get user ID", errorResult.message, "Error message should match expected message")
+            assertEquals(R.string.error_register_internal, errorResult.messageResId,
+                "Error resource ID should be for internal error")
+
+            verify(mockFirebaseAuth).createUserWithEmailAndPassword(testShelterForm.email, testShelterForm.password)
+            verifyNoInteractions(mockFirestore) // Firestore shouldn't be accessed when auth fails
+        }
     }
 }
