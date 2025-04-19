@@ -289,4 +289,83 @@ class PetRepositoryImplTest {
 
         Mockito.verifyNoInteractions(firestore)
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("getVolunteerDashboard returns success with correct dashboard data")
+    fun getVolunteerDashboard_returnsSuccessWithDashboardData() = runTest {
+        val volunteerId = "volunteer123"
+        val volunteerPath = "${FirebaseKeys.VOLUNTEER_COLLECTION}/$volunteerId"
+
+        val petsCollectionRef = Mockito.mock(CollectionReference::class.java)
+        val petsQuery = Mockito.mock(Query::class.java)
+        val adoptedPetsQuery = Mockito.mock(Query::class.java)
+        val petsSnapshot = Mockito.mock(QuerySnapshot::class.java)
+        val adoptedPetsSnapshot = Mockito.mock(QuerySnapshot::class.java)
+
+        val petDoc1 = Mockito.mock(DocumentSnapshot::class.java)
+        val petDoc2 = Mockito.mock(DocumentSnapshot::class.java)
+        val petDoc3 = Mockito.mock(DocumentSnapshot::class.java)
+
+        Mockito.lenient().`when`(petDoc1.id).thenReturn("pet1")
+        Mockito.lenient().`when`(petDoc2.id).thenReturn("pet2")
+        Mockito.lenient().`when`(petDoc3.id).thenReturn("pet3")
+
+        val petDocs = listOf(petDoc1, petDoc2, petDoc3)
+        val adoptedPetDocs = listOf(petDoc2)
+
+        whenever(firestore.collection(FirebaseKeys.PET_COLLECTION)).thenReturn(petsCollectionRef)
+        whenever(petsCollectionRef.whereEqualTo("volunteer", volunteerPath)).thenReturn(petsQuery)
+        whenever(petsQuery.get()).thenReturn(Tasks.forResult(petsSnapshot))
+        whenever(petsSnapshot.documents).thenReturn(petDocs)
+        whenever(petsQuery.whereEqualTo("adopted", true)).thenReturn(adoptedPetsQuery)
+        whenever(adoptedPetsQuery.get()).thenReturn(Tasks.forResult(adoptedPetsSnapshot))
+        whenever(adoptedPetsSnapshot.documents).thenReturn(adoptedPetDocs)
+
+        val viewsCollectionRef = Mockito.mock(CollectionReference::class.java)
+        val viewsQuery = Mockito.mock(Query::class.java)
+        val viewsSnapshot = Mockito.mock(QuerySnapshot::class.java)
+
+        val viewDoc1 = Mockito.mock(DocumentSnapshot::class.java)
+        val viewDoc2 = Mockito.mock(DocumentSnapshot::class.java)
+        whenever(viewDoc1.getString("shelterId")).thenReturn("shelter1")
+        whenever(viewDoc2.getString("shelterId")).thenReturn("shelter2")
+        val viewDocs = listOf(viewDoc1, viewDoc2)
+
+        whenever(firestore.collection(FirebaseKeys.PET_VIEWS_COLLECTION)).thenReturn(viewsCollectionRef)
+        whenever(viewsCollectionRef.whereIn("petId", listOf("pet1", "pet2", "pet3"))).thenReturn(viewsQuery)
+        whenever(viewsQuery.get()).thenReturn(Tasks.forResult(viewsSnapshot))
+        whenever(viewsSnapshot.documents).thenReturn(viewDocs)
+
+        val results = repository.getVolunteerDashboard(volunteerId).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Success)
+
+        val success = results[1] as Resource.Success
+        val dashboardResult = success.data
+
+        assertEquals(3, dashboardResult?.totalPets)
+        assertEquals(1, dashboardResult?.adoptedPets)
+        assertEquals(2, dashboardResult?.totalViews)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("getVolunteerDashboard returns error when volunteerId is empty")
+    fun getVolunteerDashboard_returnsErrorWhenVolunteerIdIsEmpty() = runTest {
+        val emptyVolunteerId = ""
+        val results = repository.getVolunteerDashboard(emptyVolunteerId).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Error)
+
+        val error = results[1] as Resource.Error
+        assertEquals("Volunteer ID cannot be empty", error.message)
+        assertEquals(R.string.error_empty_volunteer_id, error.messageResId)
+
+        Mockito.verifyNoInteractions(firestore)
+    }
 }
