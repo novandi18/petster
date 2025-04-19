@@ -403,5 +403,30 @@ class AuthRepositoryImplTest {
             verify(mockDocumentReference).get()
             verify(mockDocumentReference).set(any(), any<SetOptions>())
         }
+
+        @Test
+        @DisplayName("loginShelter - Invalid Credentials - Should emit Loading then Error")
+        fun loginShelter_invalidCredentials_emitsLoadingAndError() = runTest {
+            val exception = mock<FirebaseAuthInvalidCredentialsException> {
+                on { message } doReturn "The password is invalid or the user does not have a password."
+            }
+
+            whenever(mockFirebaseAuth.signInWithEmailAndPassword(testEmail, testPassword))
+                .thenReturn(Tasks.forException(exception))
+
+            val emissions = authRepository.loginShelter(testEmail, testPassword).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Error")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Error, "Second emission should be Error")
+
+            val errorResult = emissions[1] as Resource.Error<ShelterAuthResult>
+            assertEquals(exception.message, errorResult.message, "Error message should match exception message")
+            assertEquals(R.string.error_login_invalid_credentials, errorResult.messageResId,
+                "Error resource ID should be for invalid credentials")
+
+            verify(mockFirebaseAuth).signInWithEmailAndPassword(testEmail, testPassword)
+            verifyNoInteractions(mockFirestore)
+        }
     }
 }
