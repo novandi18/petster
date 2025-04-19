@@ -368,4 +368,87 @@ class PetRepositoryImplTest {
 
         Mockito.verifyNoInteractions(firestore)
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("updatePet returns success when pet is updated successfully")
+    fun updatePet_returnsSuccessResult() = runTest {
+        val petId = "pet123"
+        val updatedPet = mockPet.copy(
+            id = petId,
+            name = "Updated Buddy",
+            breed = "Labrador Retriever"
+        )
+
+        val documentReference = Mockito.mock(DocumentReference::class.java)
+        val documentSnapshot = Mockito.mock(DocumentSnapshot::class.java)
+        val collectionReference = Mockito.mock(CollectionReference::class.java)
+
+        whenever(firestore.collection(FirebaseKeys.PET_COLLECTION)).thenReturn(collectionReference)
+        whenever(collectionReference.document(petId)).thenReturn(documentReference)
+        whenever(documentReference.get()).thenReturn(Tasks.forResult(documentSnapshot))
+        whenever(documentSnapshot.exists()).thenReturn(true)
+        whenever(documentReference.set(any())).thenReturn(Tasks.forResult(null))
+        whenever(context.getString(R.string.pet_update_success)).thenReturn("Pet information updated successfully")
+
+        val results = repository.updatePet(updatedPet).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Success)
+
+        val success = results[1] as Resource.Success
+        val petResult = success.data
+
+        assertEquals("Pet information updated successfully", petResult?.message)
+        assertEquals(petId, petResult?.pet?.id)
+        assertEquals("Updated Buddy", petResult?.pet?.name)
+        assertEquals("Labrador Retriever", petResult?.pet?.breed)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("updatePet returns error when pet is not found")
+    fun updatePet_returnsErrorWhenPetNotFound() = runTest {
+        val petId = "nonexistentPet123"
+        val updatedPet = mockPet.copy(id = petId)
+
+        val documentReference = Mockito.mock(DocumentReference::class.java)
+        val documentSnapshot = Mockito.mock(DocumentSnapshot::class.java)
+        val collectionReference = Mockito.mock(CollectionReference::class.java)
+
+        whenever(firestore.collection(FirebaseKeys.PET_COLLECTION)).thenReturn(collectionReference)
+        whenever(collectionReference.document(petId)).thenReturn(documentReference)
+        whenever(documentReference.get()).thenReturn(Tasks.forResult(documentSnapshot))
+        whenever(documentSnapshot.exists()).thenReturn(false)
+
+        Mockito.lenient().`when`(context.getString(R.string.pet_not_found)).thenReturn("Pet not found")
+
+        val results = repository.updatePet(updatedPet).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Error)
+
+        val error = results[1] as Resource.Error
+        assertEquals("Pet not found", error.message)
+        assertEquals(R.string.pet_not_found, error.messageResId)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    @DisplayName("updatePet returns error when pet ID is null")
+    fun updatePet_returnsErrorWhenPetIdIsNull() = runTest {
+        val updatedPet = mockPet.copy(id = null)
+        val results = repository.updatePet(updatedPet).toList()
+
+        assertEquals(2, results.size)
+        assertTrue(results[0] is Resource.Loading)
+        assertTrue(results[1] is Resource.Error)
+
+        val error = results[1] as Resource.Error
+        assertEquals("Pet ID cannot be null", error.message)
+
+        Mockito.verifyNoInteractions(firestore)
+    }
 }
