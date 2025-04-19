@@ -4,6 +4,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
@@ -298,6 +299,31 @@ class AuthRepositoryImplTest {
             verify(mockCollectionReference).document(testUserId)
             verify(mockDocumentReference).set(any())
             verifyNoMoreInteractions(mockFirebaseAuth, mockFirestore, mockCollectionReference, mockDocumentReference)
+        }
+
+        @Test
+        @DisplayName("registerShelter - Email Already Exists - Should emit Loading then Error")
+        fun registerShelter_emailAlreadyExists_emitsLoadingAndError() = runTest {
+            val exception = mock<FirebaseAuthUserCollisionException> {
+                on { message } doReturn "The email address is already in use by another account."
+            }
+
+            whenever(mockFirebaseAuth.createUserWithEmailAndPassword(testShelterForm.email, testShelterForm.password))
+                .thenReturn(Tasks.forException(exception))
+
+            val emissions = authRepository.registerShelter(testShelterForm).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Error")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Error, "Second emission should be Error")
+
+            val errorResult = emissions[1] as Resource.Error
+            assertEquals(exception.message, errorResult.message, "Error message should match exception message")
+            assertEquals(R.string.error_shelter_already_exists, errorResult.messageResId,
+                "Error resource ID should match 'shelter already exists'")
+
+            verify(mockFirebaseAuth).createUserWithEmailAndPassword(testShelterForm.email, testShelterForm.password)
+            verifyNoInteractions(mockFirestore)
         }
     }
 }
