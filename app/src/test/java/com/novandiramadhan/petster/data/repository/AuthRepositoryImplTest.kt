@@ -174,4 +174,54 @@ class AuthRepositoryImplTest {
             verifyNoInteractions(mockFirestore)
         }
     }
+
+    @Nested
+    @DisplayName("Login Volunteer Tests")
+    inner class LoginVolunteerTests {
+
+        @Test
+        @DisplayName("loginVolunteer - Success - Should emit Loading then Success")
+        fun loginVolunteer_success_emitsLoadingAndSuccess() = runTest {
+            val documentSnapshot = mock<com.google.firebase.firestore.DocumentSnapshot> {
+                on { exists() } doReturn true
+                on { toObject(Volunteer::class.java) } doReturn Volunteer(
+                    uuid = testUserId,
+                    name = "Test Volunteer",
+                    phoneNumber = "1234567890",
+                    address = "123 Test Street"
+                )
+            }
+
+            whenever(mockFirebaseUser.uid).thenReturn(testUserId)
+            whenever(mockAuthResult.user).thenReturn(mockFirebaseUser)
+            whenever(mockFirebaseAuth.signInWithEmailAndPassword(testEmail, testPassword))
+                .thenReturn(Tasks.forResult(mockAuthResult))
+            whenever(mockFirestore.collection(FirebaseKeys.VOLUNTEER_COLLECTION)).thenReturn(mockCollectionReference)
+            whenever(mockCollectionReference.document(testUserId)).thenReturn(mockDocumentReference)
+            whenever(mockDocumentReference.get()).thenReturn(Tasks.forResult(documentSnapshot))
+            whenever(mockDocumentReference.set(any(), any<com.google.firebase.firestore.SetOptions>()))
+                .thenReturn(Tasks.forResult(null))
+
+            val emissions = authRepository.loginVolunteer(testEmail, testPassword).toList()
+
+            assertEquals(2, emissions.size, "Should emit Loading and Success")
+            assertTrue(emissions[0] is Resource.Loading, "First emission should be Loading")
+            assertTrue(emissions[1] is Resource.Success, "Second emission should be Success")
+
+            val successResult = emissions[1] as Resource.Success<VolunteerAuthResult>
+            val volunteerResult = successResult.data?.volunteer
+
+            assertEquals(testUserId, volunteerResult?.uuid, "UUID should match")
+            assertEquals(testEmail, volunteerResult?.email, "Email should be updated to login email")
+            assertEquals("Test Volunteer", volunteerResult?.name, "Name should match retrieved data")
+            assertTrue(successResult.data?.isLoginType == true, "isLoginType should be true for login")
+
+            verify(mockFirebaseAuth).signInWithEmailAndPassword(testEmail, testPassword)
+            // Use times(2) since collection() is called twice in the implementation
+            verify(mockFirestore, org.mockito.Mockito.times(2)).collection(FirebaseKeys.VOLUNTEER_COLLECTION)
+            verify(mockCollectionReference, org.mockito.Mockito.times(2)).document(testUserId)
+            verify(mockDocumentReference).get()
+            verify(mockDocumentReference).set(any(), any<com.google.firebase.firestore.SetOptions>())
+        }
+    }
 }
