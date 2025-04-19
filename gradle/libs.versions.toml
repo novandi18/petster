@@ -36,6 +36,7 @@ mockito = "5.17.0"
 mockitoInline = "5.2.0"
 mockitoKotlin = "5.4.0"
 coroutinesTest = "1.10.2"
+androidxTest = "1.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -91,6 +92,9 @@ mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref =
 mockito-junit-jupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockito" }
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTest" }
+androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTest" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

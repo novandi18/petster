@@ -130,6 +130,7 @@ dependencies {
     implementation(libs.compose.markdown)
     implementation(libs.gen.ai)
 
+    testImplementation(libs.room.testing)
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.mockito.core)
@@ -139,6 +140,8 @@ dependencies {
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.test.core.ktx)
 
     mockitoAgent(libs.mockito.core) { isTransitive = false }
 
