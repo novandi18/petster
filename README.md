@@ -38,5 +38,9 @@ Clean Architecture
 ## Design Pattern
 Model-View-ViewModel (MVVM)
 
+## Screenshots
+![Petster banner](https://github.com/user-attachments/assets/59ec1fd2-a47e-4a89-af93-c124a2b3465f)
+
+
 ## Others
 Soon...
