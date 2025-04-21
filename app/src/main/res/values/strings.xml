@@ -93,6 +93,8 @@
     <string name="your_pets">Your Pets</string>
     <string name="change_email">Change Email</string>
     <string name="logout">Logout</string>
+    <string name="add_location">Add location</string>
+    <string name="change_location">Change location</string>
 
     <!--  Pet Screen  -->
     <string name="volunteer_detail">Volunteer Detail</string>
@@ -184,6 +186,17 @@
     <string name="ask_about_pet">Ask about pet</string>
     <string name="send_message">Send Message</string>
     <string name="delete_history">Delete History</string>
+
+    <!--  Maps Screen  -->
+    <string name="your_location">Your Location</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="choose">Choose</string>
+    <string name="selected_location">Selected location</string>
+    <string name="enable_location_title">Enable Location Service</string>
+    <string name="enable_location_desc">This app requires location services to be enabled to show your current location on the map. Please enable location services.</string>
+    <string name="update_location_failed">Failed to update your location</string>
+    <string name="update_location_success">Successfully to update your location</string>
 
     <!--  Loading  -->
     <string name="post_loading">Your post is currently being uploaded. Please wait a moment.</string>
