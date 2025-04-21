@@ -39,10 +39,14 @@ android {
         val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY", "")
         val geminiModel = localProperties.getProperty("GEMINI_MODEL", "")
         val imgbbApiKey = localProperties.getProperty("IMGBB_API_KEY", "")
+        val googleMapsApiKey = localProperties.getProperty("GOOGLE_MAPS_API_KEY", "")
 
         buildConfigField("String", "GEMINI_API_KEY", geminiApiKey)
         buildConfigField("String", "GEMINI_MODEL", geminiModel)
         buildConfigField("String", "IMGBB_API_KEY", imgbbApiKey)
+        buildConfigField("String", "GOOGLE_MAPS_API_KEY", googleMapsApiKey)
+
+        resValue("string", "GOOGLE_MAPS_API_KEY", googleMapsApiKey)
     }
 
     buildTypes {
@@ -85,6 +89,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.android.material)
     implementation(libs.activity.ktx)
 
     implementation(libs.dagger.hilt)
@@ -105,6 +110,10 @@ dependencies {
 
     implementation(libs.datastore)
     implementation(libs.material.icons)
+
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
 
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
