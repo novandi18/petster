@@ -28,6 +28,7 @@ import kotlinx.coroutines.tasks.await
 import java.io.IOException
 import javax.inject.Inject
 import com.novandiramadhan.petster.R
+import com.novandiramadhan.petster.domain.model.VolunteerLocation
 
 class AuthRepositoryImpl @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
@@ -530,6 +531,45 @@ class AuthRepositoryImpl @Inject constructor(
                 }
                 is IllegalArgumentException -> {
                     Resource.Error(message = e.message ?: "Invalid data provided for update.")
+                }
+                else -> {
+                    Resource.Error(
+                        messageResId = R.string.error_unknown,
+                        message = e.message.toString()
+                    )
+                }
+            }
+            emit(errorResource)
+        }
+    }
+
+    override fun updateVolunteerLocation(
+        uuid: String,
+        location: VolunteerLocation
+    ): Flow<Resource<Unit>> {
+        return flow {
+            emit(Resource.Loading())
+            if (uuid.isBlank()) {
+                throw IllegalArgumentException("Volunteer UUID cannot be blank for location update.")
+            }
+            val volunteerDocRef = firestore.collection(FirebaseKeys.VOLUNTEER_COLLECTION)
+                .document(uuid)
+
+            val updates = mapOf<String, Any>(
+                "location" to location
+            )
+            volunteerDocRef.update(updates).await()
+            emit(Resource.Success(Unit))
+        }.catch { e ->
+            val errorResource: Resource.Error<Unit> = when (e) {
+                is FirebaseFirestoreException -> {
+                    Resource.Error(
+                        messageResId = R.string.update_location_failed,
+                        message = "Failed to update volunteer location: ${e.message}"
+                    )
+                }
+                is IllegalArgumentException -> {
+                    Resource.Error(message = e.message ?: "Invalid data provided for location update.")
                 }
                 else -> {
                     Resource.Error(

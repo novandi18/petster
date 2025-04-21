@@ -8,6 +8,7 @@ import com.novandiramadhan.petster.domain.model.ShelterForm
 import com.novandiramadhan.petster.domain.model.UserResult
 import com.novandiramadhan.petster.domain.model.VolunteerAuthResult
 import com.novandiramadhan.petster.domain.model.VolunteerForm
+import com.novandiramadhan.petster.domain.model.VolunteerLocation
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -22,4 +23,5 @@ interface AuthRepository {
     fun getUser(uuid: String, userType: UserType): Flow<Resource<UserResult>>
     fun updateVolunteer(form: VolunteerForm, uuid: String): Flow<Resource<Unit>>
     fun updateShelter(form: ShelterForm, uuid: String): Flow<Resource<Unit>>
+    fun updateVolunteerLocation(uuid: String, location: VolunteerLocation): Flow<Resource<Unit>>
 }

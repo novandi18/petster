@@ -8,6 +8,7 @@ import com.novandiramadhan.petster.domain.model.ShelterForm
 import com.novandiramadhan.petster.domain.model.UserResult
 import com.novandiramadhan.petster.domain.model.VolunteerAuthResult
 import com.novandiramadhan.petster.domain.model.VolunteerForm
+import com.novandiramadhan.petster.domain.model.VolunteerLocation
 import com.novandiramadhan.petster.domain.repository.AuthRepository
 import com.novandiramadhan.petster.domain.usecase.AuthUseCase
 import kotlinx.coroutines.flow.Flow
@@ -60,4 +61,9 @@ class AuthInteractor @Inject constructor(
         form: ShelterForm,
         uuid: String
     ): Flow<Resource<Unit>> = authRepository.updateShelter(form, uuid)
+
+    override fun updateVolunteerLocation(
+        uuid: String,
+        location: VolunteerLocation
+    ): Flow<Resource<Unit>> = authRepository.updateVolunteerLocation(uuid, location)
 }
