@@ -1,5 +1,6 @@
 package com.novandiramadhan.petster.common.utils
 
+import android.location.LocationManager
 import android.util.Patterns
 import java.text.NumberFormat
 import java.util.Locale
@@ -37,4 +38,9 @@ fun rupiahToNumber(rupiahString: String): Long {
 
 fun formatIbbUrl(originalUrl: String): String {
     return originalUrl.replace(".co/", ".co.com/")
+}
+
+fun isLocationEnabled(locationManager: LocationManager): Boolean {
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 }
