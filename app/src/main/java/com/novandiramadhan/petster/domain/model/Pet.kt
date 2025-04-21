@@ -1,6 +1,7 @@
 package com.novandiramadhan.petster.domain.model
 
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.PropertyName
 
 data class Pet(
     val id: String? = null,
@@ -18,9 +19,19 @@ data class Pet(
     val specialDiet: String? = null,
     val disabilities: List<String>? = null,
     val breed: String? = null,
+
+    @field:JvmField
+    @field:PropertyName("adopted")
     val isAdopted: Boolean = false,
+
+    @field:JvmField
+    @field:PropertyName("vaccinated")
     val isVaccinated: Boolean = false,
+
+    @field:JvmField
+    @field:PropertyName("favorite")
     val isFavorite: Boolean = false,
+
     val volunteer: String? = null,
     val createdAt: Timestamp? = null,
     val image: PetImage? = null,
