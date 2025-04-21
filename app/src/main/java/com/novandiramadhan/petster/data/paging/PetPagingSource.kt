@@ -28,6 +28,7 @@ class PetPagingSource(
 
             var query = firestore.collection(FirebaseKeys.PET_COLLECTION)
                 .orderBy("createdAt", Query.Direction.DESCENDING)
+                .whereEqualTo("adopted", false)
 
             if (filter != null) {
                 filter.selectedCategory?.let { category ->
@@ -87,7 +88,6 @@ class PetPagingSource(
                         .get()
                         .await()
 
-                    // Count occurrences of each petId
                     for (doc in viewsSnapshot.documents) {
                         val petId = doc.getString("petId")
                         if (petId != null) {
