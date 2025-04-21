@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,33 +44,34 @@ fun PetAdoptBar(
             )
             .padding(vertical = 16.dp, horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = if (isAdopted) Arrangement.Center else Arrangement.SpaceBetween
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.adopt_fee),
-                style = MaterialTheme.typography.bodySmall,
-                color = Black
-            )
-            Text(
-                text = adoptFee.toRupiah(),
-                style = MaterialTheme.typography.titleMedium,
-                color = Black
-            )
-        }
-
         if (isAdopted) {
             Text(
                 modifier = Modifier.padding(8.dp),
-                text = stringResource(R.string.adopted),
-                style = MaterialTheme.typography.titleLarge,
+                text = stringResource(R.string.this_pet_is_adopted),
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = Black
+                color = Black,
+                textAlign = TextAlign.Center
             )
         } else {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.adopt_fee),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Black
+                )
+                Text(
+                    text = adoptFee.toRupiah(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Black
+                )
+            }
+
             ElevatedButton(
                 onClick = onAdoptClick,
                 colors = ButtonDefaults.elevatedButtonColors(

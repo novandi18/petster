@@ -124,6 +124,7 @@
     <string name="delete_pet_success">Pet deleted successfully</string>
     <string name="set_as_adopted">Set as Adopted</string>
     <string name="set_as_available">Set as Available</string>
+    <string name="this_pet_is_adopted">This pet is adopted.</string>
 
     <!--  Connect Screen  -->
     <string name="sign_in">Sign In</string>
