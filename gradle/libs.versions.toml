@@ -37,6 +37,10 @@ mockitoInline = "5.2.0"
 mockitoKotlin = "5.4.0"
 coroutinesTest = "1.10.2"
 androidxTest = "1.6.1"
+mapsCompose = "4.3.3"
+playServiceMaps = "19.2.0"
+playServiceLocation = "21.3.0"
+material = "1.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +57,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+android-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 navigation-hilt = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "navigationHilt" }
 hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltCompiler" }
@@ -95,6 +100,9 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
 androidx-test-core = { group = "androidx.test", name = "core", version.ref = "androidxTest" }
 androidx-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxTest" }
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServiceMaps" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServiceLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
