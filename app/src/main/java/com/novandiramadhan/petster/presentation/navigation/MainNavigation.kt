@@ -10,7 +10,6 @@ import com.novandiramadhan.petster.presentation.screen.ExploreScreen
 import com.novandiramadhan.petster.presentation.screen.FavoriteScreen
 import com.novandiramadhan.petster.presentation.screen.HomeScreen
 import com.novandiramadhan.petster.presentation.screen.NotificationScreen
-import com.novandiramadhan.petster.presentation.screen.ProfileScreen
 import com.novandiramadhan.petster.presentation.screen.ShelterConnectScreen
 import com.novandiramadhan.petster.presentation.screen.VolunteerConnectScreen
 import com.novandiramadhan.petster.presentation.screen.WelcomeScreen
@@ -47,17 +46,6 @@ fun NavGraphBuilder.mainGraph(navController: NavController) {
 
     composable<Destinations.Notification> {
         NotificationScreen()
-    }
-
-    composable<Destinations.Profile> {
-        ProfileScreen(
-            back = {
-                navController.popBackStack()
-            },
-            navigateTo = { destination ->
-                navController.navigate(destination)
-            }
-        )
     }
 
     composable<Destinations.VolunteerConnect> {
