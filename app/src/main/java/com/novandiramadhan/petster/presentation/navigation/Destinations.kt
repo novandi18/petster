@@ -1,5 +1,6 @@
 package com.novandiramadhan.petster.presentation.navigation
 
+import com.novandiramadhan.petster.domain.model.Volunteer
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -53,6 +54,16 @@ sealed class Destinations(val showBottomBar: Boolean) {
     @Serializable
     data class ArticleDetail(
         val id: Int
+    ): Destinations(false)
+
+    @Serializable
+    data class VolunteerMapsUpdate(
+        val volunteer: Volunteer
+    ): Destinations(false)
+
+    @Serializable
+    data class VolunteerMaps(
+        val volunteer: Volunteer
     ): Destinations(false)
 
     @Serializable
