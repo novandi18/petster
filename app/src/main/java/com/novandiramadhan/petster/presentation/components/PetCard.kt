@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.Pets
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -72,6 +74,15 @@ fun PetCard(
             modifier = Modifier.fillMaxSize()
         ) {
             AsyncImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        if (pet.isAdopted) {
+                            scaleX = 1.05f
+                            scaleY = 1.05f
+                            alpha = 0.9f
+                        }
+                    },
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(pet.image?.imageCoverUrl)
                     .placeholder(R.drawable.image_placeholder)
@@ -88,10 +99,25 @@ fun PetCard(
                         }
                     )
                     .build(),
-                modifier = Modifier.fillMaxSize(),
                 contentDescription = pet.name,
                 contentScale = ContentScale.Crop,
             )
+
+            if (pet.isAdopted) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f))
+                )
+
+                Icon(
+                    modifier = Modifier.align(Alignment.Center)
+                        .size(64.dp),
+                    imageVector = Icons.Rounded.Pets,
+                    contentDescription = stringResource(R.string.adopted),
+                    tint = LimeGreen
+                )
+            }
 
             if (isFavoriteShow) {
                 IconButton(
@@ -147,17 +173,6 @@ fun PetCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         lineHeight = 8.sp,
-                        color = Black
-                    )
-                }
-
-                if (pet.isAdopted) {
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = stringResource(R.string.adopted),
-                        style = MaterialTheme.typography.titleSmall,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                         color = Black
                     )
                 }
