@@ -482,7 +482,7 @@ fun PetScreen(
                             .align(Alignment.BottomCenter)
                             .padding(16.dp),
                         adoptFee = 100000,
-                        isAdopted = false,
+                        isAdopted = petState?.data?.isAdopted == true,
                         onAdoptClick = {
                             if (petState is Resource.Success && shelterState is Resource.Success &&
                                 volunteerState is Resource.Success) {
