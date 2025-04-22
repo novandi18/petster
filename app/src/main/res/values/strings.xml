@@ -46,6 +46,7 @@
     <string name="benefit_adoption_item_3">More Affordable: Adoption fees are generally lower than buying from a breeder.</string>
     <string name="benefit_adoption_item_4">Support Animal Welfare: You help reduce the problem of pet overpopulation.</string>
     <string name="benefit_adoption_item_5">Diverse Choices: Find various ages, breeds, and personalities to match your lifestyle.</string>
+    <string name="no_pets_available">No %s pets available</string>
 
     <string-array name="home_pet_categories">
         <item>All</item>
