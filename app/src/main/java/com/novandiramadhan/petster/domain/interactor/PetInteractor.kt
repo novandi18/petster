@@ -8,6 +8,7 @@ import com.novandiramadhan.petster.domain.model.PetHome
 import com.novandiramadhan.petster.domain.model.PetResult
 import com.novandiramadhan.petster.domain.model.PetView
 import com.novandiramadhan.petster.domain.model.Result
+import com.novandiramadhan.petster.domain.model.ShelterLocation
 import com.novandiramadhan.petster.domain.model.VolunteerDashboardResult
 import com.novandiramadhan.petster.domain.repository.PetRepository
 import com.novandiramadhan.petster.domain.usecase.PetUseCase
@@ -24,8 +25,12 @@ class PetInteractor @Inject constructor(
     override fun getPetsHome(limitEachCategory: Int, shelterId: String): Flow<Resource<PetHome>> =
         petRepository.getPetsHome(limitEachCategory, shelterId)
 
-    override fun getPets(shelterId: String?, filter: PetFilterState?): Flow<PagingData<Pet>> =
-        petRepository.getPets(shelterId, filter)
+    override fun getPets(
+        shelterId: String?,
+        filter: PetFilterState?,
+        shelterLocation: ShelterLocation?
+    ): Flow<PagingData<Pet>> =
+        petRepository.getPets(shelterId, filter, shelterLocation)
 
     override fun getPetById(id: String, shelterId: String?): Flow<Resource<Pet>> =
         petRepository.getPetById(id, shelterId)

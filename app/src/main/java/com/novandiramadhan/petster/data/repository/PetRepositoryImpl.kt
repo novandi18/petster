@@ -20,6 +20,7 @@ import com.novandiramadhan.petster.domain.model.PetHome
 import com.novandiramadhan.petster.domain.model.PetResult
 import com.novandiramadhan.petster.domain.model.PetView
 import com.novandiramadhan.petster.domain.model.Result
+import com.novandiramadhan.petster.domain.model.ShelterLocation
 import com.novandiramadhan.petster.domain.model.VolunteerDashboardResult
 import com.novandiramadhan.petster.domain.repository.PetRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -192,7 +193,11 @@ class PetRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getPets(shelterId: String?, filter: PetFilterState?): Flow<PagingData<Pet>> {
+    override fun getPets(
+        shelterId: String?,
+        filter: PetFilterState?,
+        shelterLocation: ShelterLocation?
+    ): Flow<PagingData<Pet>> {
         val pagingConfig = PagingConfig(
             pageSize = 10,
             prefetchDistance = 5,
@@ -207,6 +212,7 @@ class PetRepositoryImpl @Inject constructor(
                     firestore = firestore,
                     shelterId = shelterId,
                     filter = filter,
+                    shelterLocation = shelterLocation
                 )
             }
         ).flow
