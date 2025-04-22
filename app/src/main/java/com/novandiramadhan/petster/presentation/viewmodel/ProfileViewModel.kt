@@ -7,6 +7,7 @@ import com.novandiramadhan.petster.common.types.UserType
 import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.domain.datastore.AuthDataStore
 import com.novandiramadhan.petster.domain.model.AuthState
+import com.novandiramadhan.petster.domain.model.Result
 import com.novandiramadhan.petster.domain.model.Shelter
 import com.novandiramadhan.petster.domain.model.ShelterForm
 import com.novandiramadhan.petster.domain.model.UserResult
@@ -44,6 +45,12 @@ class ProfileViewModel @Inject constructor(
 
     private val _isFormDisabled = MutableStateFlow(false)
     val isFormDisabled: StateFlow<Boolean> = _isFormDisabled.asStateFlow()
+
+    private val _changeEmailState = MutableStateFlow<Resource<Result>?>(null)
+    val changeEmailState = _changeEmailState.asStateFlow()
+
+    private val _reAuthState = MutableStateFlow<Resource<Result>?>(null)
+    val reAuthState = _reAuthState.asStateFlow()
 
     val volunteerProfile: StateFlow<Volunteer?> = user.mapState { resource ->
         (resource as? Resource.Success)?.data?.let { userResult ->
@@ -168,6 +175,59 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    fun changeEmail(email: String) {
+        viewModelScope.launch {
+            val userUuid = _authState.value?.uuid!!
+
+            when (authState.value?.userType) {
+                UserType.SHELTER -> {
+                    authUseCase.changeEmailShelter(userUuid, email)
+                        .catch { e ->
+                            Log.e("ProfileViewModel", "Error changing email for $userUuid", e)
+                            _changeEmailState.value = Resource.Error(
+                                message = e.message ?: "Unknown error changing email"
+                            )
+                        }
+                        .collect {
+                            _changeEmailState.value = it
+                            if (it is Resource.Success) logout()
+                        }
+                }
+                UserType.VOLUNTEER -> {
+                    authUseCase.changeEmailVolunteer(userUuid, email)
+                        .catch { e ->
+                            Log.e("ProfileViewModel", "Error changing email for $userUuid", e)
+                            _changeEmailState.value = Resource.Error(
+                                message = e.message ?: "Unknown error changing email"
+                            )
+                        }
+                        .collect {
+                            _changeEmailState.value = it
+                            if (it is Resource.Success) logout()
+                        }
+                }
+                else -> {
+                    _changeEmailState.value = Resource.Error("Invalid user type")
+                }
+            }
+        }
+    }
+
+    fun reAuthenticate(password: String) {
+        viewModelScope.launch {
+            authUseCase.reAuthenticate(password)
+                .catch { e ->
+                    Log.e("ProfileViewModel", "Error re-authenticating user", e)
+                    _reAuthState.value = Resource.Error(
+                        message = e.message ?: "Unknown error re-authenticating user"
+                    )
+                }
+                .collect {
+                    _reAuthState.value = it
+                }
+        }
+    }
+
     private fun <T> StateFlow<Resource<UserResult>>.mapState(mapper: (Resource<UserResult>) -> T?): StateFlow<T?> {
         return this.map(mapper).stateIn(
             scope = viewModelScope,
@@ -178,5 +238,13 @@ class ProfileViewModel @Inject constructor(
 
     fun resetUpdateProfileState() {
         _updateProfileState.value = null
+    }
+
+    fun resetChangeEmailState() {
+        _changeEmailState.value = null
+    }
+
+    fun resetReAuthState() {
+        _reAuthState.value = null
     }
 }

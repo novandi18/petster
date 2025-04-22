@@ -1,5 +1,6 @@
 package com.novandiramadhan.petster.presentation.screen
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +43,8 @@ import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.types.UserType
 import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.presentation.components.AccountConnect
+import com.novandiramadhan.petster.presentation.components.ChangeEmailDialog
+import com.novandiramadhan.petster.presentation.components.ReAuthDialog
 import com.novandiramadhan.petster.presentation.components.ShelterProfile
 import com.novandiramadhan.petster.presentation.components.UpdateShelterProfile
 import com.novandiramadhan.petster.presentation.components.UpdateVolunteerProfile
@@ -62,8 +66,89 @@ fun ProfileScreen(
     val isFormDisabled by viewModel.isFormDisabled.collectAsState()
     val volunteer by viewModel.volunteerProfile.collectAsState()
     val shelter by viewModel.shelterProfile.collectAsState()
+    val changeEmailState by viewModel.changeEmailState.collectAsState()
+    val reAuthState by viewModel.reAuthState.collectAsState()
+    var showReAuthDialog by remember { mutableStateOf(false) }
+    var showChangeEmailDialog by remember { mutableStateOf(false) }
     var showUpdateProfile by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    if (showChangeEmailDialog) {
+        val currentEmail = when {
+            volunteer != null -> volunteer!!.email ?: ""
+            shelter != null -> shelter!!.email ?: ""
+            else -> ""
+        }
+
+        ChangeEmailDialog(
+            currentEmail = currentEmail,
+            isLoading = changeEmailState is Resource.Loading,
+            onDismiss = {
+                showChangeEmailDialog = false
+                viewModel.resetChangeEmailState()
+            },
+            onSubmit = { email ->
+                viewModel.changeEmail(email)
+            }
+        )
+
+        when (val state = changeEmailState) {
+            is Resource.Success -> {
+                LaunchedEffect(state) {
+                    Toast.makeText(
+                        context,
+                        R.string.email_change_verification_logout,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    showChangeEmailDialog = false
+                }
+            }
+            is Resource.Error -> {
+                Log.d("ProfileScreen: ChangeEmailError", state.message.toString())
+                LaunchedEffect(state) {
+                    Toast.makeText(
+                        context,
+                        state.message ?: context.getString(R.string.email_change_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            else -> {}
+        }
+    }
+
+    if (showReAuthDialog) {
+        ReAuthDialog(
+            isLoading = reAuthState is Resource.Loading,
+            onDismiss = {
+                showReAuthDialog = false
+                viewModel.resetReAuthState()
+            },
+            onConfirm = { password ->
+                viewModel.reAuthenticate(password)
+            }
+        )
+
+        when (val state = reAuthState) {
+            is Resource.Success -> {
+                LaunchedEffect(state) {
+                    showReAuthDialog = false
+                    showChangeEmailDialog = true
+                    viewModel.resetReAuthState()
+                }
+            }
+            is Resource.Error -> {
+                LaunchedEffect(state) {
+                    Toast.makeText(
+                        context,
+                        state.message ?: context.getString(R.string.reauth_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            else -> {}
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -178,7 +263,9 @@ fun ProfileScreen(
                             navigateTo = { destinations ->
                                 navigateTo(destinations)
                             },
-                            onChangeEmail = {}
+                            onChangeEmail = {
+                                showReAuthDialog = true
+                            }
                         )
                     } else if (shelter != null) {
                         ShelterProfile(
@@ -186,7 +273,9 @@ fun ProfileScreen(
                             navigateTo = { destinations ->
                                 navigateTo(destinations)
                             },
-                            onChangeEmail = {}
+                            onChangeEmail = {
+                                showReAuthDialog = true
+                            }
                         )
                     } else {
                         Box(modifier = Modifier
