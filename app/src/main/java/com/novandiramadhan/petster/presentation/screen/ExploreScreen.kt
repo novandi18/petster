@@ -1,6 +1,14 @@
 package com.novandiramadhan.petster.presentation.screen
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.provider.Settings
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FilterAlt
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,6 +30,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -51,8 +61,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.novandiramadhan.petster.common.types.UserType
+import com.novandiramadhan.petster.common.utils.isLocationEnabled
 import com.novandiramadhan.petster.data.resource.Resource
+import com.novandiramadhan.petster.domain.model.ShelterLocation
 import com.novandiramadhan.petster.presentation.components.FilterDialog
 import kotlin.toString
 
@@ -71,6 +87,12 @@ fun ExploreScreen(
     val isRefreshing = pets.loadState.refresh is LoadState.Loading
     var showFilterDialog by remember { mutableStateOf(false) }
     val currentFilters by viewModel.filterState.collectAsState()
+    val isLocationFilterActive by viewModel.isLocationFilterActive.collectAsState()
+    val context = LocalContext.current
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+    var showLocationPermissionDialog by remember { mutableStateOf(false) }
+    var showEnableGpsDialog by remember { mutableStateOf(false) }
 
     when (val status = petFavStatus) {
         is Resource.Loading -> {}
@@ -104,6 +126,68 @@ fun ExploreScreen(
         )
     }
 
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allPermissionsGranted = permissions.entries.all { it.value }
+        if (allPermissionsGranted) {
+            if (isLocationEnabled(locationManager)) {
+                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                try {
+                    fusedLocationClient.getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        CancellationTokenSource().token
+                    ).addOnSuccessListener { location ->
+                        if (location != null) {
+                            viewModel.toggleLocationFilter(
+                                isActive = true,
+                                location = ShelterLocation(location.latitude, location.longitude)
+                            )
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.failed_get_location), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: SecurityException) {
+                    Toast.makeText(context, context.getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                showEnableGpsDialog = true
+            }
+        } else {
+            showLocationPermissionDialog = true
+        }
+    }
+
+    if (showLocationPermissionDialog) {
+        AlertDialog(
+            onDismissRequest = { showLocationPermissionDialog = false },
+            title = {
+                Text(
+                    text = context.getString(R.string.enable_location_title)
+                )
+            },
+            text = {
+                Text(
+                    text = context.getString(R.string.enable_location_desc)
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showEnableGpsDialog = false
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    context.startActivity(intent)
+                }) {
+                    Text(context.getString(R.string.settings))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLocationPermissionDialog = false }) {
+                    Text(context.getString(R.string.cancel))
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -131,10 +215,58 @@ fun ExploreScreen(
 
                     IconButton(
                         modifier = Modifier.size(48.dp),
-                        onClick = { },
+                        onClick = {
+                            if (isLocationFilterActive) {
+                                viewModel.toggleLocationFilter(false)
+                            } else {
+                                val fineLocationPermission = ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.ACCESS_FINE_LOCATION
+                                )
+                                val coarseLocationPermission = ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.ACCESS_COARSE_LOCATION
+                                )
+
+                                when {
+                                    fineLocationPermission == PackageManager.PERMISSION_GRANTED ||
+                                            coarseLocationPermission == PackageManager.PERMISSION_GRANTED -> {
+                                        if (isLocationEnabled(locationManager)) {
+                                            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+                                            try {
+                                                fusedLocationClient.getCurrentLocation(
+                                                    Priority.PRIORITY_HIGH_ACCURACY,
+                                                    CancellationTokenSource().token
+                                                ).addOnSuccessListener { location ->
+                                                    if (location != null) {
+                                                        viewModel.toggleLocationFilter(
+                                                            isActive = true,
+                                                            location = ShelterLocation(location.latitude, location.longitude)
+                                                        )
+                                                    } else {
+                                                        Toast.makeText(context, context.getString(R.string.failed_get_location), Toast.LENGTH_SHORT).show()
+                                                    }
+                                                }
+                                            } catch (e: SecurityException) {
+                                                Toast.makeText(context, context.getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show()
+                                            }
+                                        } else {
+                                            showEnableGpsDialog = true
+                                        }
+                                    }
+                                    else -> {
+                                        locationPermissionLauncher.launch(
+                                            arrayOf(
+                                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                                Manifest.permission.ACCESS_COARSE_LOCATION
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        },
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
+                            contentColor = if (isLocationFilterActive) LimeGreen else
+                                MaterialTheme.colorScheme.onBackground
                         )
                     ) {
                         Icon(

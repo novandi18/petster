@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.novandiramadhan.petster.common.LocationFilterParams
 import com.novandiramadhan.petster.common.states.PetFilterState
 import com.novandiramadhan.petster.common.types.UserType
 import com.novandiramadhan.petster.data.resource.Resource
@@ -12,6 +13,7 @@ import com.novandiramadhan.petster.domain.datastore.AuthDataStore
 import com.novandiramadhan.petster.domain.model.AuthState
 import com.novandiramadhan.petster.domain.model.Pet
 import com.novandiramadhan.petster.domain.model.Result
+import com.novandiramadhan.petster.domain.model.ShelterLocation
 import com.novandiramadhan.petster.domain.usecase.FavoritePetUseCase
 import com.novandiramadhan.petster.domain.usecase.PetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -49,19 +51,55 @@ class ExploreViewModel @Inject constructor(
     private val _filterState = MutableStateFlow(PetFilterState())
     val filterState = _filterState.asStateFlow()
 
+    private val _isLocationFilterActive = MutableStateFlow(false)
+    val isLocationFilterActive = _isLocationFilterActive.asStateFlow()
+
+    private val _userLocation = MutableStateFlow<ShelterLocation?>(null)
+    val userLocation = _userLocation.asStateFlow()
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val pets: Flow<PagingData<Pet>> = combine(authState, filterState) { state, filter ->
-        Pair(state, filter)
-    }.flatMapLatest { (state, filter) ->
-        if (!state?.uuid.isNullOrEmpty()) {
-            initializePetsFlow(state.uuid, filter)
+    val pets: Flow<PagingData<Pet>> = combine(authState, filterState, isLocationFilterActive, userLocation) {
+            state, filter, locationActive, location ->
+        LocationFilterParams(state, filter, locationActive, location)
+    }.flatMapLatest { params ->
+        if (!params.state?.uuid.isNullOrEmpty()) {
+            initializePetsFlow(
+                shelterId = params.state.uuid,
+                filter = params.filter,
+                useLocation = params.locationActive,
+                location = params.location,
+            )
         } else {
-            initializePetsFlow(filter = filter)
+            initializePetsFlow(
+                filter = params.filter,
+                useLocation = params.locationActive,
+                location = params.location,
+            )
         }
     }.cachedIn(viewModelScope)
 
     init {
         getUserLoggedIn()
+    }
+
+    fun toggleLocationFilter(isActive: Boolean, location: ShelterLocation? = null) {
+        _isLocationFilterActive.value = isActive
+        if (location != null) {
+            _userLocation.value = location
+        }
+    }
+
+    private fun initializePetsFlow(
+        shelterId: String? = null,
+        filter: PetFilterState? = null,
+        useLocation: Boolean = false,
+        location: ShelterLocation? = null,
+    ): Flow<PagingData<Pet>> {
+        return if (useLocation && location != null) {
+            petUseCase.getPets(shelterId, filter, location)
+        } else {
+            petUseCase.getPets(shelterId, filter)
+        }
     }
 
     fun getUserLoggedIn() {
@@ -108,13 +146,6 @@ class ExploreViewModel @Inject constructor(
 
     fun updateFilters(newFilters: PetFilterState) {
         _filterState.value = newFilters
-    }
-
-    private fun initializePetsFlow(
-        shelterId: String? = null,
-        filter: PetFilterState? = null
-    ): Flow<PagingData<Pet>> {
-        return petUseCase.getPets(shelterId, filter)
     }
 
     fun resetAddFavStatus() {
