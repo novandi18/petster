@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,16 +41,19 @@ fun FilterDialog(
     onDismissRequest: () -> Unit,
     onApplyFilters: (PetFilterState) -> Unit
 ) {
+    val context = LocalContext.current
     var selectedAdoptionFeeRange by remember { mutableStateOf(initialState.selectedAdoptionFeeRange) }
     var selectedCategory by remember { mutableStateOf(initialState.selectedCategory) }
     var selectedGender by remember { mutableStateOf(initialState.selectedGender) }
     var selectedVaccinated by remember { mutableStateOf(initialState.selectedVaccinated) }
+    var selectedSize by remember { mutableStateOf(initialState.selectedSize) }
 
     val resetFilters = {
         selectedAdoptionFeeRange = null
         selectedCategory = null
         selectedGender = null
         selectedVaccinated = null
+        selectedSize = null
     }
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -82,7 +86,7 @@ fun FilterDialog(
                             .selectableGroup()
                             .padding(top = 8.dp, bottom = 16.dp)
                     ) {
-                        PetFilterOptions.adoptionFeeRanges.forEach { range ->
+                        PetFilterOptions(context).adoptionFeeRanges.forEach { range ->
                             FilterRadioButtonRow(
                                 text = range,
                                 selected = (selectedAdoptionFeeRange == range),
@@ -99,7 +103,7 @@ fun FilterDialog(
                             .selectableGroup()
                             .padding(top = 8.dp, bottom = 16.dp)
                     ) {
-                        PetFilterOptions.categories.forEach { category ->
+                        PetFilterOptions(context).categories.forEach { category ->
                             FilterRadioButtonRow(
                                 text = category,
                                 selected = (selectedCategory == category),
@@ -116,7 +120,7 @@ fun FilterDialog(
                             .selectableGroup()
                             .padding(top = 8.dp, bottom = 16.dp)
                     ) {
-                        PetFilterOptions.genders.forEach { gender ->
+                        PetFilterOptions(context).genders.forEach { gender ->
                             FilterRadioButtonRow(
                                 text = gender,
                                 selected = (selectedGender == gender),
@@ -133,12 +137,29 @@ fun FilterDialog(
                             .selectableGroup()
                             .padding(top = 8.dp, bottom = 16.dp)
                     ) {
-                        PetFilterOptions.vaccinated.forEach { vaccinated ->
+                        PetFilterOptions(context).vaccinated.forEach { vaccinated ->
                             FilterRadioButtonRow(
                                 text = vaccinated,
                                 selected = (selectedVaccinated == vaccinated),
                                 onClick = {
                                     selectedVaccinated = if (selectedVaccinated == vaccinated) null else vaccinated
+                                }
+                            )
+                        }
+                    }
+
+                    Text(stringResource(R.string.pet_size), style = MaterialTheme.typography.titleMedium)
+                    Column(
+                        Modifier
+                            .selectableGroup()
+                            .padding(top = 8.dp, bottom = 16.dp)
+                    ) {
+                        PetFilterOptions(context).size.forEach { size ->
+                            FilterRadioButtonRow(
+                                text = size,
+                                selected = (selectedSize == size),
+                                onClick = {
+                                    selectedSize = if (selectedSize == size) null else size
                                 }
                             )
                         }
@@ -165,7 +186,8 @@ fun FilterDialog(
                                 selectedAdoptionFeeRange = selectedAdoptionFeeRange,
                                 selectedCategory = selectedCategory,
                                 selectedGender = selectedGender,
-                                selectedVaccinated = selectedVaccinated
+                                selectedVaccinated = selectedVaccinated,
+                                selectedSize = selectedSize
                             )
                             onApplyFilters(appliedFilters)
                         }

@@ -91,6 +91,9 @@ class PetPagingSource(
                         "No" -> query = query.whereEqualTo("vaccinated", false)
                     }
                 }
+                filter.selectedSize?.let { size ->
+                    query = query.whereEqualTo("size", size)
+                }
             }
 
             query = query.limit(queryPageSize.toLong())
