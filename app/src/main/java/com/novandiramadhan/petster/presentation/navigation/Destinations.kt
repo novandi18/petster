@@ -62,11 +62,6 @@ sealed class Destinations(val showBottomBar: Boolean) {
     ): Destinations(false)
 
     @Serializable
-    data class VolunteerMaps(
-        val volunteer: Volunteer
-    ): Destinations(false)
-
-    @Serializable
     data object Assistant: Destinations(true)
 
     companion object {
