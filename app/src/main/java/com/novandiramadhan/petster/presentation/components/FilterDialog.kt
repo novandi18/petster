@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -78,91 +77,74 @@ fun FilterDialog(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                Column(Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false)) {
-
-                    Text(stringResource(R.string.adopt_fee), style = MaterialTheme.typography.titleMedium)
-                    Column(
-                        Modifier
-                            .selectableGroup()
-                            .padding(top = 8.dp, bottom = 16.dp)
+                Column(
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .weight(1f, fill = false)
+                ) {
+                    ExpandableFilterSection(
+                        title = stringResource(R.string.adopt_fee),
+                        selectedValue = selectedAdoptionFeeRange  // Pass selected value
                     ) {
-                        PetFilterOptions(context).adoptionFeeRanges.forEach { range ->
-                            FilterRadioButtonRow(
-                                text = range,
-                                selected = (selectedAdoptionFeeRange == range),
-                                onClick = {
-                                    selectedAdoptionFeeRange = if (selectedAdoptionFeeRange == range) null else range
-                                }
-                            )
-                        }
+                        FilterOptions(
+                            options = PetFilterOptions(context).adoptionFeeRanges,
+                            selectedOption = selectedAdoptionFeeRange,
+                            onOptionSelected = { option ->
+                                selectedAdoptionFeeRange = if (selectedAdoptionFeeRange == option) null else option
+                            }
+                        )
                     }
 
-                    Text(stringResource(R.string.pet_category), style = MaterialTheme.typography.titleMedium)
-                    Column(
-                        Modifier
-                            .selectableGroup()
-                            .padding(top = 8.dp, bottom = 16.dp)
+                    ExpandableFilterSection(
+                        title = stringResource(R.string.pet_category),
+                        selectedValue = selectedCategory
                     ) {
-                        PetFilterOptions(context).categories.forEach { category ->
-                            FilterRadioButtonRow(
-                                text = category,
-                                selected = (selectedCategory == category),
-                                onClick = {
-                                    selectedCategory = if (selectedCategory == category) null else category
-                                }
-                            )
-                        }
+                        FilterOptions(
+                            options = PetFilterOptions(context).categories,
+                            selectedOption = selectedCategory,
+                            onOptionSelected = { option ->
+                                selectedCategory = if (selectedCategory == option) null else option
+                            }
+                        )
                     }
 
-                    Text(stringResource(R.string.gender), style = MaterialTheme.typography.titleMedium)
-                    Column(
-                        Modifier
-                            .selectableGroup()
-                            .padding(top = 8.dp, bottom = 16.dp)
+                    ExpandableFilterSection(
+                        title = stringResource(R.string.gender),
+                        selectedValue = selectedGender
                     ) {
-                        PetFilterOptions(context).genders.forEach { gender ->
-                            FilterRadioButtonRow(
-                                text = gender,
-                                selected = (selectedGender == gender),
-                                onClick = {
-                                    selectedGender = if (selectedGender == gender) null else gender
-                                }
-                            )
-                        }
+                        FilterOptions(
+                            options = PetFilterOptions(context).genders,
+                            selectedOption = selectedGender,
+                            onOptionSelected = { option ->
+                                selectedGender = if (selectedGender == option) null else option
+                            }
+                        )
                     }
 
-                    Text(stringResource(R.string.vaccinated), style = MaterialTheme.typography.titleMedium)
-                    Column(
-                        Modifier
-                            .selectableGroup()
-                            .padding(top = 8.dp, bottom = 16.dp)
+                    ExpandableFilterSection(
+                        title = stringResource(R.string.vaccinated),
+                        selectedValue = selectedVaccinated
                     ) {
-                        PetFilterOptions(context).vaccinated.forEach { vaccinated ->
-                            FilterRadioButtonRow(
-                                text = vaccinated,
-                                selected = (selectedVaccinated == vaccinated),
-                                onClick = {
-                                    selectedVaccinated = if (selectedVaccinated == vaccinated) null else vaccinated
-                                }
-                            )
-                        }
+                        FilterOptions(
+                            options = PetFilterOptions(context).vaccinated,
+                            selectedOption = selectedVaccinated,
+                            onOptionSelected = { option ->
+                                selectedVaccinated = if (selectedVaccinated == option) null else option
+                            }
+                        )
                     }
 
-                    Text(stringResource(R.string.pet_size), style = MaterialTheme.typography.titleMedium)
-                    Column(
-                        Modifier
-                            .selectableGroup()
-                            .padding(top = 8.dp, bottom = 16.dp)
+                    ExpandableFilterSection(
+                        title = stringResource(R.string.pet_size),
+                        selectedValue = selectedSize
                     ) {
-                        PetFilterOptions(context).size.forEach { size ->
-                            FilterRadioButtonRow(
-                                text = size,
-                                selected = (selectedSize == size),
-                                onClick = {
-                                    selectedSize = if (selectedSize == size) null else size
-                                }
-                            )
-                        }
+                        FilterOptions(
+                            options = PetFilterOptions(context).size,
+                            selectedOption = selectedSize,
+                            onOptionSelected = { option ->
+                                selectedSize = if (selectedSize == option) null else option
+                            }
+                        )
                     }
                 }
 
