@@ -100,6 +100,14 @@
     <string name="logout">Logout</string>
     <string name="add_location">Add location</string>
     <string name="change_location">Change location</string>
+    <string name="email_change_verification_sent">Verification email has been sent. Please check your inbox.</string>
+    <string name="change_email_logout_notice">After changing your email, you will be logged out and need to verify your new email address.</string>
+    <string name="email_change_verification_logout">Verification email sent. You have been logged out. Please verify your new email address and log in again.</string>
+    <string name="email_change_failed">Failed to change email. Please try again.</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="reauth_required_message">For security reasons, please enter your current password to continue.</string>
+    <string name="confirm">Confirm</string>
+    <string name="reauth_failed">Authentication failed. Please check your password and try again.</string>
 
     <!--  Pet Screen  -->
     <string name="volunteer_detail">Volunteer Detail</string>
