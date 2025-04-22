@@ -8,10 +8,12 @@ data class PetFilterState(
     val selectedCategory: String? = null,
     val selectedGender: String? = null,
     val selectedVaccinated: String? = null,
+    val selectedSize: String? = null,
 ) {
     val isNotEmpty: Boolean
         get() = selectedAdoptionFeeRange != null ||
                 selectedCategory != null ||
                 selectedGender != null ||
-                selectedVaccinated != null
+                selectedVaccinated != null ||
+                selectedSize != null
 }
