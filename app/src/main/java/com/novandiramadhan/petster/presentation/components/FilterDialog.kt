@@ -25,9 +25,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.PetFilterOptions
 import com.novandiramadhan.petster.common.states.PetFilterState
 import com.novandiramadhan.petster.presentation.ui.theme.PetsterTheme
@@ -41,13 +43,13 @@ fun FilterDialog(
     var selectedAdoptionFeeRange by remember { mutableStateOf(initialState.selectedAdoptionFeeRange) }
     var selectedCategory by remember { mutableStateOf(initialState.selectedCategory) }
     var selectedGender by remember { mutableStateOf(initialState.selectedGender) }
-    var selectedVacinated by remember { mutableStateOf(initialState.selectedGender) }
+    var selectedVaccinated by remember { mutableStateOf(initialState.selectedVaccinated) }
 
     val resetFilters = {
         selectedAdoptionFeeRange = null
         selectedCategory = null
         selectedGender = null
-        selectedVacinated = null
+        selectedVaccinated = null
     }
 
     Dialog(onDismissRequest = onDismissRequest) {
@@ -67,14 +69,14 @@ fun FilterDialog(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Filter Options",
+                    text = stringResource(R.string.filter_options),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 Column(Modifier.verticalScroll(rememberScrollState()).weight(1f, fill = false)) {
 
-                    Text("Adoption Fee", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.adopt_fee), style = MaterialTheme.typography.titleMedium)
                     Column(
                         Modifier
                             .selectableGroup()
@@ -91,7 +93,7 @@ fun FilterDialog(
                         }
                     }
 
-                    Text("Category", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.pet_category), style = MaterialTheme.typography.titleMedium)
                     Column(
                         Modifier
                             .selectableGroup()
@@ -108,7 +110,7 @@ fun FilterDialog(
                         }
                     }
 
-                    Text("Gender", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.gender), style = MaterialTheme.typography.titleMedium)
                     Column(
                         Modifier
                             .selectableGroup()
@@ -125,18 +127,18 @@ fun FilterDialog(
                         }
                     }
 
-                    Text("Vacinated", style = MaterialTheme.typography.titleMedium)
+                    Text(stringResource(R.string.vaccinated), style = MaterialTheme.typography.titleMedium)
                     Column(
                         Modifier
                             .selectableGroup()
                             .padding(top = 8.dp, bottom = 16.dp)
                     ) {
-                        PetFilterOptions.vacinated.forEach { vacinated ->
+                        PetFilterOptions.vaccinated.forEach { vaccinated ->
                             FilterRadioButtonRow(
-                                text = vacinated,
-                                selected = (selectedVacinated == vacinated),
+                                text = vaccinated,
+                                selected = (selectedVaccinated == vaccinated),
                                 onClick = {
-                                    selectedVacinated = if (selectedVacinated == vacinated) null else vacinated
+                                    selectedVaccinated = if (selectedVaccinated == vaccinated) null else vaccinated
                                 }
                             )
                         }
@@ -150,11 +152,11 @@ fun FilterDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = resetFilters) {
-                        Text("Clear All")
+                        Text(stringResource(R.string.clear_all))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     TextButton(onClick = onDismissRequest) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -163,12 +165,12 @@ fun FilterDialog(
                                 selectedAdoptionFeeRange = selectedAdoptionFeeRange,
                                 selectedCategory = selectedCategory,
                                 selectedGender = selectedGender,
-                                selectedVacinated = selectedVacinated
+                                selectedVaccinated = selectedVaccinated
                             )
                             onApplyFilters(appliedFilters)
                         }
                     ) {
-                        Text("Apply")
+                        Text(stringResource(R.string.apply))
                     }
                 }
             }

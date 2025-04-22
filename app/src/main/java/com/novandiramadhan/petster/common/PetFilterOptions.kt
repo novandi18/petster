@@ -9,5 +9,5 @@ object PetFilterOptions {
     )
     val categories = listOf("Dog", "Cat", "Other")
     val genders = listOf("Male", "Female")
-    val vacinated = listOf("Yes", "No")
+    val vaccinated = listOf("Yes", "No")
 }
