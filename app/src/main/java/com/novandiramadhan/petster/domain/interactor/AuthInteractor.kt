@@ -66,4 +66,7 @@ class AuthInteractor @Inject constructor(
         uuid: String,
         location: VolunteerLocation
     ): Flow<Resource<Unit>> = authRepository.updateVolunteerLocation(uuid, location)
+
+    override fun reAuthenticate(password: String): Flow<Resource<Result>> =
+        authRepository.reAuthenticate(password)
 }

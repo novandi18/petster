@@ -24,4 +24,5 @@ interface AuthUseCase {
     fun updateVolunteer(form: VolunteerForm, uuid: String): Flow<Resource<Unit>>
     fun updateShelter(form: ShelterForm, uuid: String): Flow<Resource<Unit>>
     fun updateVolunteerLocation(uuid: String, location: VolunteerLocation): Flow<Resource<Unit>>
+    fun reAuthenticate(password: String): Flow<Resource<Result>>
 }

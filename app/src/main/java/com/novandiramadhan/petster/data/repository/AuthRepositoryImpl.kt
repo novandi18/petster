@@ -1,6 +1,7 @@
 package com.novandiramadhan.petster.data.repository
 
 import android.util.Log
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -579,6 +580,22 @@ class AuthRepositoryImpl @Inject constructor(
                 }
             }
             emit(errorResource)
+        }
+    }
+
+    override fun reAuthenticate(password: String): Flow<Resource<Result>> {
+        return flow {
+            emit(Resource.Loading())
+            val user = firebaseAuth.currentUser
+            if (user != null) {
+                val credential = EmailAuthProvider.getCredential(user.email!!, password)
+                user.reauthenticate(credential).await()
+                emit(Resource.Success(Result("Re-authentication successful")))
+            } else {
+                emit(Resource.Error("User not authenticated"))
+            }
+        }.catch {
+            emit(Resource.Error(it.message ?: "Re-authentication failed"))
         }
     }
 }
