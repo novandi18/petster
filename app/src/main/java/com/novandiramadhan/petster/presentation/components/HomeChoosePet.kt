@@ -8,18 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.FilterAlt
-import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,51 +55,11 @@ fun HomeChoosePet(
             ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp, start = 24.dp, end = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.choose_pet),
-                style = MaterialTheme.typography.titleLarge,
-            )
-            if (!isEmpty) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    IconButton(
-                        modifier = Modifier.size(48.dp),
-                        onClick = { },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.FilterAlt,
-                            contentDescription = stringResource(R.string.filter),
-                        )
-                    }
-
-                    IconButton(
-                        modifier = Modifier.size(48.dp),
-                        onClick = { },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.LocationOn,
-                            contentDescription = stringResource(R.string.location),
-                        )
-                    }
-                }
-            }
-        }
+        Text(
+            modifier = Modifier.padding(top = 20.dp, start = 24.dp, end = 24.dp),
+            text = stringResource(R.string.choose_pet),
+            style = MaterialTheme.typography.titleLarge,
+        )
 
         if (isEmpty) {
             Column(
