@@ -86,6 +86,7 @@ fun ExploreScreen(
     val refreshState = rememberPullToRefreshState()
     val isRefreshing = pets.loadState.refresh is LoadState.Loading
     var showFilterDialog by remember { mutableStateOf(false) }
+    var isLocationLoading by remember { mutableStateOf(false) }
     val currentFilters by viewModel.filterState.collectAsState()
     val isLocationFilterActive by viewModel.isLocationFilterActive.collectAsState()
     val context = LocalContext.current
@@ -132,12 +133,14 @@ fun ExploreScreen(
         val allPermissionsGranted = permissions.entries.all { it.value }
         if (allPermissionsGranted) {
             if (isLocationEnabled(locationManager)) {
+                isLocationLoading = true // Start loading
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
                 try {
                     fusedLocationClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,
                         CancellationTokenSource().token
                     ).addOnSuccessListener { location ->
+                        isLocationLoading = false
                         if (location != null) {
                             viewModel.toggleLocationFilter(
                                 isActive = true,
@@ -146,8 +149,12 @@ fun ExploreScreen(
                         } else {
                             Toast.makeText(context, context.getString(R.string.failed_get_location), Toast.LENGTH_SHORT).show()
                         }
+                    }.addOnFailureListener {
+                        isLocationLoading = false
+                        Toast.makeText(context, context.getString(R.string.failed_get_location), Toast.LENGTH_SHORT).show()
                     }
                 } catch (e: SecurityException) {
+                    isLocationLoading = false
                     Toast.makeText(context, context.getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show()
                 }
             } else {
@@ -230,12 +237,14 @@ fun ExploreScreen(
                                     fineLocationPermission == PackageManager.PERMISSION_GRANTED ||
                                             coarseLocationPermission == PackageManager.PERMISSION_GRANTED -> {
                                         if (isLocationEnabled(locationManager)) {
+                                            isLocationLoading = true
                                             val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
                                             try {
                                                 fusedLocationClient.getCurrentLocation(
                                                     Priority.PRIORITY_HIGH_ACCURACY,
                                                     CancellationTokenSource().token
                                                 ).addOnSuccessListener { location ->
+                                                    isLocationLoading = false
                                                     if (location != null) {
                                                         viewModel.toggleLocationFilter(
                                                             isActive = true,
@@ -244,8 +253,12 @@ fun ExploreScreen(
                                                     } else {
                                                         Toast.makeText(context, context.getString(R.string.failed_get_location), Toast.LENGTH_SHORT).show()
                                                     }
+                                                }.addOnFailureListener {
+                                                    isLocationLoading = false
+                                                    Toast.makeText(context, context.getString(R.string.failed_get_location), Toast.LENGTH_SHORT).show()
                                                 }
                                             } catch (e: SecurityException) {
+                                                isLocationLoading = false
                                                 Toast.makeText(context, context.getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show()
                                             }
                                         } else {
@@ -269,10 +282,18 @@ fun ExploreScreen(
                                 MaterialTheme.colorScheme.onBackground
                         )
                     ) {
-                        Icon(
-                            imageVector = Icons.Rounded.LocationOn,
-                            contentDescription = stringResource(R.string.location),
-                        )
+                        if (isLocationLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onBackground,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Rounded.LocationOn,
+                                contentDescription = stringResource(R.string.location),
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
