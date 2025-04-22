@@ -21,6 +21,7 @@
 - **WhatsApp Integration:** Direct WhatsApp contact with volunteers via app.
 - **Quick Adoption Pet:** Instantly start adoption inquiry.
 - **Assistant:** AI chat (Gemini) for shelter pet info queries.
+- **Nearby Pets Discovery:** Find pets in your vicinity.
 
 ## Tech Stack
 - [Kotlin](https://kotlinlang.org/) - Programming Language
@@ -31,6 +32,9 @@
 - [Room Database](https://developer.android.com/reference/kotlin/androidx/room/RoomDatabase) - Local Database
 - [Paging 3 with Remote Mediator](https://developer.android.com/topic/libraries/architecture/paging/v3-overview) - Display Data from Room or over a Network
 - [Firebase](https://firebase.google.com/) - Firebase
+- [Gemini](https://gemini.google.com/) - AI Assistant
+- [Android Location Services](https://developer.android.com/training/location) - Accessing device location
+- [Google Maps Platform (potentially)](https://developers.google.com/maps-platform) - Geocoding and Maps
 
 ## Architecture
 Clean Architecture
@@ -40,7 +44,6 @@ Model-View-ViewModel (MVVM)
 
 ## Screenshots
 ![Petster banner](https://github.com/user-attachments/assets/59ec1fd2-a47e-4a89-af93-c124a2b3465f)
-
 
 ## Others
 Soon...
