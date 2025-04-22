@@ -40,16 +40,16 @@ import com.novandiramadhan.petster.presentation.ui.theme.PetsterTheme
 @Composable
 fun HomeChoosePet(
     navigateTo: (Destinations) -> Unit = {},
-    selectedCategory: String = "All",
+    selectedCategory: String = stringArrayResource(R.array.home_pet_categories).first(),
     setCategory: (String) -> Unit = {},
     pets: PetHome
 ) {
     val isEmpty = pets.dog.isEmpty() && pets.cat.isEmpty() && pets.other.isEmpty()
-
+    val categories = stringArrayResource(R.array.home_pet_categories)
     val currentPets = when (selectedCategory.lowercase()) {
-        "dog" -> pets.dog
-        "cat" -> pets.cat
-        "other" -> pets.other
+        categories[1].lowercase() -> pets.dog
+        categories[2].lowercase() -> pets.cat
+        categories[3].lowercase() -> pets.other
         else -> pets.dog + pets.cat + pets.other
     }
 
@@ -176,7 +176,7 @@ fun HomeChoosePet(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 40.dp),
-                        text = "No ${selectedCategory.lowercase()} pets available",
+                        text = stringResource(R.string.no_pets_available, selectedCategory.lowercase()),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
