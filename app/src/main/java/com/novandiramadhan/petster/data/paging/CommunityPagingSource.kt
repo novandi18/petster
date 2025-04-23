@@ -11,20 +11,25 @@ import com.google.firebase.firestore.Query
 import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.FirebaseKeys
 import com.novandiramadhan.petster.domain.model.Post
+import com.novandiramadhan.petster.domain.model.PostResult
+import com.novandiramadhan.petster.domain.model.Shelter
+import com.novandiramadhan.petster.domain.model.UserResult
+import com.novandiramadhan.petster.domain.model.Volunteer
 import kotlinx.coroutines.tasks.await
 import java.io.IOException
 
 class CommunityPagingSource(
     private val context: Context,
     private val firestore: FirebaseFirestore,
-): PagingSource<DocumentSnapshot, Post>() {
-    override fun getRefreshKey(state: PagingState<DocumentSnapshot, Post>): DocumentSnapshot? {
+    private val uuid: String,
+): PagingSource<DocumentSnapshot, PostResult>() {
+    override fun getRefreshKey(state: PagingState<DocumentSnapshot, PostResult>): DocumentSnapshot? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey
         }
     }
 
-    override suspend fun load(params: LoadParams<DocumentSnapshot>): LoadResult<DocumentSnapshot, Post> {
+    override suspend fun load(params: LoadParams<DocumentSnapshot>): LoadResult<DocumentSnapshot, PostResult> {
         return try {
             val pageSize = params.loadSize
             val startAfterDocument = params.key
@@ -48,10 +53,72 @@ class CommunityPagingSource(
 
             Log.d("CommunityPagingSource", "Loaded ${posts.size} posts")
 
+            val postResults = posts.mapNotNull { post ->
+                try {
+                    val postId = post.id ?: return@mapNotNull null
+
+                    val likesSnapshot = firestore.collection(FirebaseKeys.POSTS_COLLECTION)
+                        .document(postId)
+                        .collection(FirebaseKeys.POST_LIKES_COLLECTION)
+                        .get()
+                        .await()
+
+                    val likeCount = likesSnapshot.size()
+                    val isLiked = likesSnapshot.documents.any { it.id == uuid }
+
+                    val commentsSnapshot = firestore.collection(FirebaseKeys.POSTS_COLLECTION)
+                        .document(postId)
+                        .collection(FirebaseKeys.POST_COMMENTS_COLLECTION)
+                        .get()
+                        .await()
+
+                    val commentCount = commentsSnapshot.size()
+
+                    var author: UserResult? = null
+                    if (post.authorId != null && post.authorType != null) {
+                        val collection = when (post.authorType) {
+                            "volunteer" -> FirebaseKeys.VOLUNTEER_COLLECTION
+                            "shelter" -> FirebaseKeys.SHELTER_COLLECTION
+                            else -> null
+                        }
+
+                        if (collection != null) {
+                            val authorDoc = firestore.collection(collection)
+                                .document(post.authorId)
+                                .get()
+                                .await()
+
+                            author = when (post.authorType) {
+                                "volunteer" -> {
+                                    val volunteer = authorDoc.toObject(Volunteer::class.java)
+                                    volunteer?.let { UserResult.VolunteerResult(it) }
+                                }
+                                "shelter" -> {
+                                    val shelter = authorDoc.toObject(Shelter::class.java)
+                                    shelter?.let { UserResult.ShelterResult(it) }
+                                }
+                                else -> null
+                            }
+                        }
+                    }
+
+                    PostResult(
+                        post = post,
+                        likeCount = likeCount,
+                        commentCount = commentCount,
+                        isLiked = isLiked,
+                        author = author
+                    )
+                } catch (e: Exception) {
+                    Log.e("CommunityPagingSource", "Error processing post ${post.id}", e)
+                    null
+                }
+            }
+
             LoadResult.Page(
-                data = posts,
+                data = postResults,
                 prevKey = null,
-                nextKey = if (posts.isEmpty() || querySnapshot.documents.size < pageSize) null else lastVisible
+                nextKey = if (postResults.isEmpty() || querySnapshot.documents.size < pageSize) null else lastVisible
             )
         } catch (e: FirebaseFirestoreException) {
             Log.e("CommunityPagingSource", "Firestore error loading posts", e)
