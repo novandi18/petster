@@ -3,6 +3,8 @@ package com.novandiramadhan.petster.common.utils
 import android.location.LocationManager
 import android.util.Patterns
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 fun Int.toRupiah(): String {
@@ -43,4 +45,16 @@ fun formatIbbUrl(originalUrl: String): String {
 fun isLocationEnabled(locationManager: LocationManager): Boolean {
     return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
             locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+}
+
+fun formatPostDate(date: Date): String {
+    val formatter = SimpleDateFormat("MMM dd, yyyy • HH:mm", Locale.getDefault())
+    return formatter.format(date)
+}
+
+fun String.capitalize(): String {
+    return this.replaceFirstChar {
+        if (it.isLowerCase()) it.titlecase(Locale.getDefault())
+        else it.toString()
+    }
 }
