@@ -11,7 +11,7 @@ class BottomBarItems(
             listOf(
                 NavigationItem.Home,
                 NavigationItem.YourPets,
-                NavigationItem.Article,
+                NavigationItem.Community,
             )
         }
         UserType.SHELTER -> {
@@ -20,14 +20,14 @@ class BottomBarItems(
                 NavigationItem.Explore,
                 NavigationItem.Assistant,
                 NavigationItem.Favorite,
-                NavigationItem.Article,
+                NavigationItem.Community,
             )
         }
         else -> {
             listOf(
                 NavigationItem.Home,
                 NavigationItem.Explore,
-                NavigationItem.Article,
+                NavigationItem.Community,
             )
         }
     }

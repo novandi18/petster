@@ -4,7 +4,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.novandiramadhan.petster.presentation.screen.ArticleDetailScreen
 import com.novandiramadhan.petster.presentation.screen.NewPetScreen
 import com.novandiramadhan.petster.presentation.screen.PetScreen
 import com.novandiramadhan.petster.presentation.screen.UpdatePetScreen
@@ -44,17 +43,6 @@ fun NavGraphBuilder.petGraph(navController: NavController) {
 
         UpdatePetScreen(
             petId = pet.petId,
-            back = {
-                navController.popBackStack()
-            }
-        )
-    }
-
-    composable<Destinations.ArticleDetail> { backStackEntry ->
-        val article = requireNotNull(backStackEntry.toRoute<Destinations.ArticleDetail>())
-
-        ArticleDetailScreen(
-            id = article.id,
             back = {
                 navController.popBackStack()
             }
