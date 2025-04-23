@@ -1,9 +1,9 @@
 package com.novandiramadhan.petster.domain.repository
 
 import androidx.paging.PagingData
-import com.novandiramadhan.petster.domain.model.Post
+import com.novandiramadhan.petster.domain.model.PostResult
 import kotlinx.coroutines.flow.Flow
 
 interface CommunityRepository {
-    fun getPosts(): Flow<PagingData<Post>>
+    fun getPosts(uuid: String): Flow<PagingData<PostResult>>
 }

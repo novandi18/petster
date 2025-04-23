@@ -6,7 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.google.firebase.firestore.FirebaseFirestore
 import com.novandiramadhan.petster.data.paging.CommunityPagingSource
-import com.novandiramadhan.petster.domain.model.Post
+import com.novandiramadhan.petster.domain.model.PostResult
 import com.novandiramadhan.petster.domain.repository.CommunityRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +16,7 @@ class CommunityRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
     private val firestore: FirebaseFirestore
 ): CommunityRepository {
-    override fun getPosts(): Flow<PagingData<Post>> {
+    override fun getPosts(uuid: String): Flow<PagingData<PostResult>> {
         val pagingConfig = PagingConfig(
             pageSize = 10,
             prefetchDistance = 5,
@@ -29,7 +29,8 @@ class CommunityRepositoryImpl @Inject constructor(
             pagingSourceFactory = {
                 CommunityPagingSource(
                     context = context,
-                    firestore = firestore
+                    firestore = firestore,
+                    uuid = uuid
                 )
             }
         ).flow
