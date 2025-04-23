@@ -7,4 +7,6 @@ object FirebaseKeys {
     const val FAVORITED_PET_COLLECTION = "favorited_pets"
     const val PET_VIEWS_COLLECTION = "pet_views"
     const val POSTS_COLLECTION = "posts"
+    const val POST_COMMENTS_COLLECTION = "comments"
+    const val POST_LIKES_COLLECTION = "likes"
 }
