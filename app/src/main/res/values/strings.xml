@@ -194,6 +194,12 @@
     <string name="update_location_failed">Failed to update your location</string>
     <string name="update_location_success">Successfully to update your location</string>
 
+    <!--  Community Screen  -->
+    <string name="like">Like</string>
+    <string name="comments">Comments</string>
+    <string name="community_post_available_empty">No Posts Available</string>
+    <string name="community_post_available_empty_message">There are currently no posts available. Please check back later!</string>
+
     <!--  Loading  -->
     <string name="post_loading">Your post is currently being uploaded. Please wait a moment.</string>
     <string name="update_pet_loading">Your pet is currently being updated. Please wait a moment.</string>
@@ -371,8 +377,6 @@
     <string name="failed_get_location">Failed to get your location</string>
 
     <!--  Communities Message  -->
-    <string name="community_post_available_empty">No Posts Available</string>
-    <string name="community_post_available_empty_message">There are currently no posts available. Please check back later!</string>
     <string name="community_error_network">Network error loading community posts. Please check your connection and try again.</string>
     <string name="community_error_unexpected">An unexpected error occurred while loading posts</string>
 
