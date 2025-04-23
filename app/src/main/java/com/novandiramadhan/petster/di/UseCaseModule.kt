@@ -2,11 +2,13 @@ package com.novandiramadhan.petster.di
 
 import com.novandiramadhan.petster.domain.interactor.AssistantInteractor
 import com.novandiramadhan.petster.domain.interactor.AuthInteractor
+import com.novandiramadhan.petster.domain.interactor.CommunityInteractor
 import com.novandiramadhan.petster.domain.interactor.FavoritePetInteractor
 import com.novandiramadhan.petster.domain.interactor.PetImageInteractor
 import com.novandiramadhan.petster.domain.interactor.PetInteractor
 import com.novandiramadhan.petster.domain.usecase.AssistantUseCase
 import com.novandiramadhan.petster.domain.usecase.AuthUseCase
+import com.novandiramadhan.petster.domain.usecase.CommunityUseCase
 import com.novandiramadhan.petster.domain.usecase.FavoritePetUseCase
 import com.novandiramadhan.petster.domain.usecase.PetImageUseCase
 import com.novandiramadhan.petster.domain.usecase.PetUseCase
@@ -38,4 +40,8 @@ abstract class UseCaseModule {
     @Binds
     @Singleton
     abstract fun bindAssistantUseCase(interactor: AssistantInteractor): AssistantUseCase
+
+    @Binds
+    @Singleton
+    abstract fun bindCommunityUseCase(interactor: CommunityInteractor): CommunityUseCase
 }

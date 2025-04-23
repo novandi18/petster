@@ -2,11 +2,13 @@ package com.novandiramadhan.petster.di
 
 import com.novandiramadhan.petster.data.repository.AssistantRepositoryImpl
 import com.novandiramadhan.petster.data.repository.AuthRepositoryImpl
+import com.novandiramadhan.petster.data.repository.CommunityRepositoryImpl
 import com.novandiramadhan.petster.data.repository.FavoritePetRepositoryImpl
 import com.novandiramadhan.petster.data.repository.PetImageRepositoryImpl
 import com.novandiramadhan.petster.data.repository.PetRepositoryImpl
 import com.novandiramadhan.petster.domain.repository.AssistantRepository
 import com.novandiramadhan.petster.domain.repository.AuthRepository
+import com.novandiramadhan.petster.domain.repository.CommunityRepository
 import com.novandiramadhan.petster.domain.repository.FavoritePetRepository
 import com.novandiramadhan.petster.domain.repository.PetImageRepository
 import com.novandiramadhan.petster.domain.repository.PetRepository
@@ -36,4 +38,9 @@ abstract class RepositoryModule {
     abstract fun bindAssistantRepository(
         favoritePetRepositoryImpl: AssistantRepositoryImpl
     ): AssistantRepository
+
+    @Binds
+    abstract fun bindCommunityRepository(
+        communityRepositoryImpl: CommunityRepositoryImpl
+    ): CommunityRepository
 }
