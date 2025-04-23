@@ -17,13 +17,13 @@ import com.novandiramadhan.petster.presentation.ui.theme.PetsterTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationScreen() {
+fun CommunityScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.notification_title),
+                        text = stringResource(R.string.communities),
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -42,10 +42,10 @@ fun NotificationScreen() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun NotificationScreenPreview() {
+fun PreviewCommunityScreen() {
     PetsterTheme {
-        NotificationScreen()
+        CommunityScreen()
     }
 }
