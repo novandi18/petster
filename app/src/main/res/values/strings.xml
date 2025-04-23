@@ -62,9 +62,8 @@
     <!--  Navigation Bar  -->
     <string name="home">Home</string>
     <string name="favorite">Favorite</string>
-    <string name="notification">Notification</string>
     <string name="explore">Explore</string>
-    <string name="article">Article</string>
+    <string name="communities">Communities</string>
     <string name="assistant">Assistant</string>
 
     <!--  Pet Category  -->
@@ -79,10 +78,6 @@
     <string name="favorite_empty_desc">You can add pets to your favorites by clicking the heart icon on the pet detail page or pet card.</string>
     <string name="add_favorite_success">Added to favorites</string>
     <string name="remove_favorite_success">Removed from favorites</string>
-
-    <!--  Notification Screen  -->
-    <string name="notification_title">Notifications</string>
-    <string name="notification_empty">No notifications yet.</string>
 
     <!--  Authentication  -->
     <string name="connect_as_volunteer">Connect as Volunteer</string>
@@ -181,21 +176,6 @@
     <string name="set_as_cover">Set as Cover</string>
     <string name="cover">Cover</string>
     <string name="adopt_fee_empty">Fill in the blank if you want to make it free</string>
-
-    <!--  Article Screen  -->
-    <string name="article_1_title">Choosing the Right Pet for Your Lifestyle</string>
-    <string name="article_2_title">Preparing Your Home for a New Pet</string>
-    <string name="article_3_title">The First Few Days with Your Adopted Pet</string>
-    <string name="article_4_title">Basic Pet Care Essentials</string>
-    <string name="article_5_title">Understanding Pet Adoption Fees</string>
-    <string name="article_1_content">Bringing a pet home is a long-term commitment. Before falling in love with a cute face, honestly assess your lifestyle.\n\nConsider your living situation (apartment vs. house, space available), your daily activity level (active vs. sedentary), and how much time you can realistically dedicate each day to exercise, grooming, training, and companionship.\n\nFactor in your budget for food, vet care, supplies, and potential emergencies. Also, consider your family members or roommates, including children or existing pets. Research different breeds or species to find one whose energy level, temperament, and care needs genuinely match your capacity.</string>
-    <string name="article_2_content">Welcome your new companion into a safe and comfortable environment. Start by pet-proofing: secure loose wires, remove toxic plants and chemicals, put away small objects they might swallow, and ensure window screens are secure.\n\nDesignate a specific, quiet area for your pet with their bed or crate, food, and water bowls. Gather all necessary supplies *before* they arrive: appropriate food, bowls, collar/harness and leash (if applicable), litter box and litter (for cats), grooming tools, toys for enrichment, and cleaning supplies for accidents.\n\nHaving everything ready minimizes stress for both you and your new pet.</string>
-    <string name="article_3_content">The first few days are crucial for building trust and helping your new pet adjust. Expect them to be shy, anxious, or overly excited. Maintain a calm and quiet environment, limiting visitors initially. Introduce them gradually to different parts of the house.\n\nEstablish a consistent routine for feeding, potty breaks or litter box checks, walks (if applicable), and quiet time right away. Use positive reinforcement for good behavior.\n\nSupervise interactions with children or other pets closely. Be patient; it takes time for a pet to feel secure and understand the rules of their new home. Watch for signs of stress and give them space when needed.</string>
-    <string name="article_4_content">Providing proper care is essential for your pet\'s health and happiness. This starts with balanced nutrition tailored to their age, breed, and health status – consult your vet for recommendations and avoid feeding harmful human foods.\n\nRegular grooming, including brushing, bathing (as needed), nail trims, and dental care, prevents health issues.\n\nEnsure they get adequate daily exercise appropriate for their species and energy level to maintain physical and mental well-being. Don\'t forget regular veterinary check-ups for vaccinations, parasite prevention, and early detection of potential health problems. Basic training and socialization are also key components of responsible pet ownership.</string>
-    <string name="article_5_content">Adoption fees might seem like a purchase price, but they serve a vital purpose. These fees rarely cover the full cost the shelter or rescue group invested in the animal, but they help offset expenses like spaying or neutering, initial vaccinations (like rabies, distemper), deworming, flea/tick treatment, microchipping for identification, and basic veterinary checks.\n\nThe fee also supports the organization\'s operational costs, allowing them to rescue more animals in need. Think of it not as buying a pet, but as an investment in your new companion\'s initial health care and a contribution towards the welfare of other homeless animals.\n\nFees can vary based on the organization, location, and the specific animal.</string>
-    <string name="article_image_desc">Image related to the article topic</string>
-    <string name="pet_tips_screen_title">Pet Articles</string>
-    <string name="article_not_found">Article not found.</string>
 
     <!--  Assistant Screen  -->
     <string name="default_prompt_assistant">Anda adalah asisten chat dari aplikasi Petster. Anda bertugas membantu pengguna terkait shelter hewan. Selalu jawab sapaan atau salam dari pengguna dengan ramah. Jika pertanyaannya mengenai hewan peliharaan, jawablah dengan jelas dan ringkas. Jika pertanyaannya di luar topik hewan peliharaan, jelaskan dengan sopan bahwa Anda hanya bisa membantu dengan pertanyaan seputar hewan peliharaan.\nPertanyaan Pengguna:\n</string>
