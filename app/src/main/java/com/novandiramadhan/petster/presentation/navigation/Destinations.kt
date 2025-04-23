@@ -21,9 +21,6 @@ sealed class Destinations(val showBottomBar: Boolean) {
     data object Favorite: Destinations(true)
 
     @Serializable
-    data object Notification: Destinations(true)
-
-    @Serializable
     data class PetDetail(
         val petId: String
     ): Destinations(false)
@@ -49,23 +46,18 @@ sealed class Destinations(val showBottomBar: Boolean) {
     ): Destinations(false)
 
     @Serializable
-    data object Article: Destinations(true)
-
-    @Serializable
-    data class ArticleDetail(
-        val id: Int
-    ): Destinations(false)
-
-    @Serializable
     data class VolunteerMapsUpdate(
         val volunteer: Volunteer
     ): Destinations(false)
 
     @Serializable
+    data object Community: Destinations(true)
+
+    @Serializable
     data object Assistant: Destinations(true)
 
     companion object {
-        val allDestinations = listOf(Welcome, Home, Profile, Settings, Favorite, Notification, YourPets,
-            Explore, Article, Assistant)
+        val allDestinations = listOf(Welcome, Home, Profile, Settings, Favorite, YourPets,
+            Explore, Assistant, Community)
     }
 }

@@ -1,17 +1,15 @@
 package com.novandiramadhan.petster.presentation.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Article
-import androidx.compose.material.icons.automirrored.rounded.Article
 import androidx.compose.material.icons.outlined.Explore
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Pets
 import androidx.compose.material.icons.rounded.Explore
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.Groups
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Pets
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.novandiramadhan.petster.R
@@ -37,13 +35,6 @@ sealed class NavigationItem(
         Icons.Rounded.Favorite
     )
 
-    data object Notification: NavigationItem(
-        Destinations.Notification,
-        Icons.Outlined.Notifications,
-        R.string.notification,
-        Icons.Rounded.Notifications
-    )
-
     data object YourPets: NavigationItem(
         Destinations.YourPets,
         Icons.Outlined.Pets,
@@ -58,17 +49,17 @@ sealed class NavigationItem(
         Icons.Rounded.Explore
     )
 
-    data object Article: NavigationItem(
-        Destinations.Article,
-        Icons.AutoMirrored.Outlined.Article,
-        R.string.article,
-        Icons.AutoMirrored.Rounded.Article
-    )
-
     data object Assistant: NavigationItem(
         Destinations.Assistant,
         starsIcon,
         R.string.assistant,
         starsIcon
+    )
+
+    data object Community: NavigationItem(
+        Destinations.Community,
+        Icons.Outlined.Groups,
+        R.string.communities,
+        Icons.Rounded.Groups
     )
 }
