@@ -211,6 +211,7 @@
     <string name="reply">Reply</string>
     <string name="replying_to">Replying to %1$s</string>
     <string name="write_reply_hint">Write reply to %1$s</string>
+    <string name="no_comments">No comments yet.</string>
 
     <!--  Loading  -->
     <string name="post_loading">Your post is currently being uploaded. Please wait a moment.</string>
@@ -391,6 +392,7 @@
     <!--  Communities Message  -->
     <string name="community_error_network">Network error loading community posts. Please check your connection and try again.</string>
     <string name="community_error_unexpected">An unexpected error occurred while loading posts</string>
+    <string name="community_error_like_failed">Error to like/unlike the post</string>
 
     <!--  Other Message  -->
     <string name="error_unknown">An unknown error occurred.</string>
