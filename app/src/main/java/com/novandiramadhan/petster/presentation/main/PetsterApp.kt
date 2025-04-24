@@ -15,6 +15,7 @@ import com.novandiramadhan.petster.common.types.UserType
 import com.novandiramadhan.petster.presentation.components.BottomBar
 import com.novandiramadhan.petster.presentation.navigation.Destinations
 import com.novandiramadhan.petster.presentation.navigation.accountGraph
+import com.novandiramadhan.petster.presentation.navigation.communityGraph
 import com.novandiramadhan.petster.presentation.navigation.mainGraph
 import com.novandiramadhan.petster.presentation.navigation.petGraph
 
@@ -52,6 +53,7 @@ fun PetsterApp(
             mainGraph(navHostController)
             accountGraph(navHostController)
             petGraph(navHostController)
+            communityGraph(navHostController)
         }
     }
 }

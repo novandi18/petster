@@ -80,6 +80,10 @@ fun NavGraphBuilder.mainGraph(navController: NavController) {
     }
 
     composable<Destinations.Community> {
-        CommunityScreen()
+        CommunityScreen(
+            navigateTo = { destination ->
+                navController.navigate(destination)
+            }
+        )
     }
 }
