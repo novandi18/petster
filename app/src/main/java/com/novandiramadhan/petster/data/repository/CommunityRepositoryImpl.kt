@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.FirebaseKeys
@@ -142,6 +143,31 @@ class CommunityRepositoryImpl @Inject constructor(
             }
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: context.getString(R.string.community_error_unexpected)))
+        }
+    }
+
+    override fun togglePostLike(
+        postId: String,
+        uuid: String,
+        isLike: Boolean
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+        try {
+            val postRef = firestore.collection(FirebaseKeys.POSTS_COLLECTION).document(postId)
+            val likeRef = postRef.collection(FirebaseKeys.POST_LIKES_COLLECTION).document(uuid)
+
+            if (isLike) {
+                val likeData = mapOf("likedAt" to FieldValue.serverTimestamp())
+                likeRef.set(likeData).await()
+                Log.d("CommunityRepository", "Post $postId liked by user $uuid")
+            } else {
+                likeRef.delete().await()
+                Log.d("CommunityRepository", "Post $postId unliked by user $uuid")
+            }
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            Log.e("CommunityRepository", "Error toggling like for post $postId by user $uuid", e)
+            emit(Resource.Error(e.message ?: context.getString(R.string.community_error_like_failed)))
         }
     }
 }

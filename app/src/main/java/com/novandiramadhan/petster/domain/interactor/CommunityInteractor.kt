@@ -16,4 +16,10 @@ class CommunityInteractor @Inject constructor(
 
     override fun getPostById(postId: String, currentUserId: String): Flow<Resource<PostResult>> =
         communityRepository.getPostById(postId, currentUserId)
+
+    override fun togglePostLike(
+        postId: String,
+        uuid: String,
+        isLike: Boolean
+    ): Flow<Resource<Unit>> = communityRepository.togglePostLike(postId, uuid, isLike)
 }
