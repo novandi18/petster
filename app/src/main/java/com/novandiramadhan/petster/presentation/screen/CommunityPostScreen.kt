@@ -163,6 +163,7 @@ fun CommunityPostScreen(
                 }
                 is Resource.Success -> {
                     val postData = postState?.data
+
                     if (postData != null) {
                         Column(
                             modifier = Modifier
@@ -171,7 +172,9 @@ fun CommunityPostScreen(
                         ) {
                             CommunityPostContent(
                                 post = postData,
-                                onLikeClick = {}
+                                onLikeClick = { postIdToLike ->
+                                    viewModel.toggleLike(postIdToLike, !postData.isLiked)
+                                }
                             )
 
                             Column(
@@ -189,7 +192,7 @@ fun CommunityPostScreen(
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
-                                            text = "No comments yet.",
+                                            text = stringResource(R.string.no_comments),
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                                         )

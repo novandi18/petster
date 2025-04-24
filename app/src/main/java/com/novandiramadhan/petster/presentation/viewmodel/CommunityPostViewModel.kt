@@ -72,6 +72,45 @@ class CommunityPostViewModel @Inject constructor(
         }
     }
 
+    fun toggleLike(postId: String, isLike: Boolean) {
+        viewModelScope.launch {
+            val currentUuid = _authState.value?.uuid
+            if (currentUuid == null) {
+                Log.e("CommunityPostViewModel", "Cannot toggle like, user UUID is null")
+                return@launch
+            }
+
+            val currentState = _post.value
+            if (currentState is Resource.Success && currentState.data != null) {
+                val currentData = currentState.data
+                val updatedData = currentData.copy(
+                    isLiked = isLike,
+                    likeCount = currentData.likeCount + if (isLike) 1 else -1
+                )
+                _post.value = Resource.Success(updatedData)
+            }
+
+            communityUseCase.togglePostLike(postId, currentUuid, isLike)
+                .catch { e ->
+                    Log.e("CommunityPostViewModel", "Error toggling like for post $postId", e)
+                    if (currentState is Resource.Success && currentState.data != null) {
+                        _post.value = currentState
+                    }
+                }
+                .collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            Log.d("CommunityPostViewModel", "Like toggled successfully for post $postId. UI updated optimistically.")
+                        }
+                        is Resource.Error -> {
+                            Log.e("CommunityPostViewModel", "Failed to toggle like: ${resource.message}")
+                        }
+                        is Resource.Loading -> {}
+                    }
+                }
+        }
+    }
+
     fun clearReplyTo() {
         _replyToCommentId.value = null
         _replyToAuthorName.value = null
