@@ -10,5 +10,6 @@ data class Post(
     val content: String? = null,
     val comments: List<PostComment>? = null,
     val likes: List<PostLike>? = null,
+    val author: UserResult? = null,
     @ServerTimestamp val createdAt: Date? = null
 )

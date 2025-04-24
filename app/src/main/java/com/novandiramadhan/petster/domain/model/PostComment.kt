@@ -9,5 +9,6 @@ data class PostComment(
     val authorType: String? = null,
     val comment: String? = null,
     val replyToCommentId: String? = null,
+    val author: UserResult? = null,
     @ServerTimestamp val createdAt: Date? = null
 )
