@@ -7,6 +7,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+const val MAX_LINES_COLLAPSED = 3
+const val MAX_COMMENT_LENGTH = 1000
+
 fun Int.toRupiah(): String {
     return "Rp${String.format(Locale("id", "ID"), "%,d", this).replace(',', '.')}"
 }

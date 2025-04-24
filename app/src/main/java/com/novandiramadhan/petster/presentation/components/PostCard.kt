@@ -48,7 +48,7 @@ fun PostCard(
     onClick: () -> Unit = {},
     onLikeClick: (String) -> Unit = {}
 ) {
-    val authorName = when (val author = post.author) {
+    val authorName = when (val author = post.post?.author) {
         is UserResult.ShelterResult -> author.shelter.name ?: "Unknown Shelter"
         is UserResult.VolunteerResult -> author.volunteer.name ?: "Unknown Volunteer"
         else -> "Unknown User"
@@ -199,17 +199,17 @@ private fun PostCardPreview() {
                     authorId = "shelter123",
                     authorType = "shelter",
                     content = "This is a short sample post from a shelter.",
+                    author = UserResult.ShelterResult(
+                        Shelter(
+                            uuid = "shelter123",
+                            name = "Happy Paws Shelter"
+                        )
+                    ),
                     createdAt = Date()
                 ),
                 likeCount = 24,
                 commentCount = 5,
                 isLiked = false,
-                author = UserResult.ShelterResult(
-                    Shelter(
-                        uuid = "shelter123",
-                        name = "Happy Paws Shelter"
-                    )
-                )
             )
         )
     }
