@@ -1,6 +1,7 @@
 package com.novandiramadhan.petster.domain.interactor
 
 import androidx.paging.PagingData
+import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.domain.model.PostResult
 import com.novandiramadhan.petster.domain.repository.CommunityRepository
 import com.novandiramadhan.petster.domain.usecase.CommunityUseCase
@@ -12,4 +13,7 @@ class CommunityInteractor @Inject constructor(
 ): CommunityUseCase {
     override fun getPosts(uuid: String): Flow<PagingData<PostResult>> =
         communityRepository.getPosts(uuid)
+
+    override fun getPostById(postId: String, currentUserId: String): Flow<Resource<PostResult>> =
+        communityRepository.getPostById(postId, currentUserId)
 }
