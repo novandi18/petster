@@ -40,6 +40,7 @@ import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.presentation.components.EmptyView
 import com.novandiramadhan.petster.presentation.components.ErrorView
 import com.novandiramadhan.petster.presentation.components.PostCard
+import com.novandiramadhan.petster.presentation.navigation.Destinations
 import com.novandiramadhan.petster.presentation.ui.theme.Black
 import com.novandiramadhan.petster.presentation.ui.theme.LimeGreen
 import com.novandiramadhan.petster.presentation.ui.theme.PetsterTheme
@@ -48,7 +49,8 @@ import com.novandiramadhan.petster.presentation.viewmodel.CommunityViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommunityScreen(
-    viewModel: CommunityViewModel = hiltViewModel()
+    viewModel: CommunityViewModel = hiltViewModel(),
+    navigateTo: (Destinations) -> Unit = {},
 ) {
     val posts = viewModel.communityPosts.collectAsLazyPagingItems()
     val refreshState = rememberPullToRefreshState()
@@ -168,6 +170,13 @@ fun CommunityScreen(
                                 post?.let {
                                     PostCard(
                                         post = it,
+                                        onClick = {
+                                            navigateTo(
+                                                Destinations.CommunityPost(
+                                                    postId = it.post?.id ?: "",
+                                                )
+                                            )
+                                        },
                                         onLikeClick = { postId ->
 
                                         }
