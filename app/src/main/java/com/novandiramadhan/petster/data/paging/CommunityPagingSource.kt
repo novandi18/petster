@@ -102,12 +102,15 @@ class CommunityPagingSource(
                         }
                     }
 
+                    val postWithAuthor = post.copy(
+                        author = author
+                    )
+
                     PostResult(
-                        post = post,
+                        post = postWithAuthor,
                         likeCount = likeCount,
                         commentCount = commentCount,
-                        isLiked = isLiked,
-                        author = author
+                        isLiked = isLiked
                     )
                 } catch (e: Exception) {
                     Log.e("CommunityPagingSource", "Error processing post ${post.id}", e)
