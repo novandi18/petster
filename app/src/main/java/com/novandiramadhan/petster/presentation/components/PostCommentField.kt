@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.rounded.Reply
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +50,8 @@ fun PostCommentField(
     onSubmit: (String) -> Unit = {},
     replyOnCommentId: String? = null,
     replyOnCommentAuthorName: String? = null,
-    onCancelReply: () -> Unit = {}
+    onCancelReply: () -> Unit = {},
+    isLoading: Boolean = false
 ) {
     var comment by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -122,8 +124,7 @@ fun PostCommentField(
                     Text(
                         text = if (isReplyMode)
                             stringResource(R.string.write_reply_hint, "@${replyOnCommentAuthorName}")
-                        else
-                            stringResource(R.string.write_comment_hint),
+                        else stringResource(R.string.write_comment_hint),
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 },
@@ -185,13 +186,21 @@ fun PostCommentField(
                                 focusManager.clearFocus()
                             }
                         },
-                        enabled = isCommentValid
+                        enabled = isCommentValid && !isLoading
                     ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Send,
-                            contentDescription = stringResource(R.string.send_comment),
-                            tint = if (isCommentValid) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                        )
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.Send,
+                                contentDescription = stringResource(R.string.send_comment),
+                                tint = if (isCommentValid) MaterialTheme.colorScheme.onBackground
+                                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+                            )
+                        }
                     }
                 }
             }
