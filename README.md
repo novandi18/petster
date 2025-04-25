@@ -22,6 +22,7 @@
 - **Quick Adoption Pet:** Instantly start adoption inquiry.
 - **Assistant:** AI chat (Gemini) for shelter pet info queries.
 - **Nearby Pets Discovery:** Find pets in your vicinity.
+- **Community:** Share updates and stories with AI-enhanced content creation.
 
 ## Tech Stack
 - [Kotlin](https://kotlinlang.org/) - Programming Language
@@ -34,7 +35,7 @@
 - [Firebase](https://firebase.google.com/) - Firebase
 - [Gemini](https://gemini.google.com/) - AI Assistant
 - [Android Location Services](https://developer.android.com/training/location) - Accessing device location
-- [Google Maps Platform (potentially)](https://developers.google.com/maps-platform) - Geocoding and Maps
+- [Google Maps Platform](https://developers.google.com/maps-platform) - Geocoding and Maps
 
 ## Architecture
 Clean Architecture
