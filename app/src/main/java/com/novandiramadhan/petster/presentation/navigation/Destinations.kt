@@ -61,6 +61,9 @@ sealed class Destinations(val showBottomBar: Boolean) {
         val postId: String
     ): Destinations(false)
 
+    @Serializable
+    data object CommunityNewPost: Destinations(false)
+
     companion object {
         val allDestinations = listOf(Welcome, Home, Profile, Settings, Favorite, YourPets,
             Explore, Assistant, Community)
