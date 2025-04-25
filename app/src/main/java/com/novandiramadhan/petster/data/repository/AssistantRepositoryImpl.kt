@@ -1,14 +1,9 @@
 package com.novandiramadhan.petster.data.repository
 
 import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.BlockThreshold
 import com.google.ai.client.generativeai.type.Content
 import com.google.ai.client.generativeai.type.GenerateContentResponse
-import com.google.ai.client.generativeai.type.HarmCategory
-import com.google.ai.client.generativeai.type.SafetySetting
 import com.google.ai.client.generativeai.type.content
-import com.google.ai.client.generativeai.type.generationConfig
-import com.novandiramadhan.petster.BuildConfig
 import com.novandiramadhan.petster.data.local.room.dao.AssistantDao
 import com.novandiramadhan.petster.data.mapper.toDomainList
 import com.novandiramadhan.petster.data.mapper.toEntity
@@ -21,21 +16,9 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AssistantRepositoryImpl @Inject constructor(
-    private val assistantDao: AssistantDao
+    private val assistantDao: AssistantDao,
+    private val generativeModel: GenerativeModel
 ): AssistantRepository {
-    private val safetySettings = listOf(
-        SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.MEDIUM_AND_ABOVE),
-        SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.MEDIUM_AND_ABOVE),
-        SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.MEDIUM_AND_ABOVE),
-        SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.MEDIUM_AND_ABOVE),
-    )
-    private val config = generationConfig { }
-    private val generativeModel = GenerativeModel(
-        modelName = BuildConfig.GEMINI_MODEL,
-        apiKey = BuildConfig.GEMINI_API_KEY,
-        generationConfig = config,
-        safetySettings = safetySettings
-    )
 
     override fun getChatHistory(shelterId: String): Flow<List<Chat>> =
         assistantDao.getAllMessages(shelterId).map { it.toDomainList() }
