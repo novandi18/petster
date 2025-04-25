@@ -2,6 +2,7 @@ package com.novandiramadhan.petster.domain.interactor
 
 import androidx.paging.PagingData
 import com.novandiramadhan.petster.data.resource.Resource
+import com.novandiramadhan.petster.domain.model.Post
 import com.novandiramadhan.petster.domain.model.PostComment
 import com.novandiramadhan.petster.domain.model.PostResult
 import com.novandiramadhan.petster.domain.repository.CommunityRepository
@@ -28,4 +29,10 @@ class CommunityInteractor @Inject constructor(
         postId: String,
         comment: PostComment
     ): Flow<Resource<Unit>> = communityRepository.addComment(postId, comment)
+
+    override fun generateAIPost(prompt: String): Flow<Resource<String>> =
+        communityRepository.generateAIPost(prompt)
+
+    override fun addPost(post: Post): Flow<Resource<Unit>> =
+        communityRepository.addPost(post)
 }

@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.content
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -31,7 +33,8 @@ import javax.inject.Inject
 
 class CommunityRepositoryImpl @Inject constructor(
     @ApplicationContext val context: Context,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val generativeModel: GenerativeModel
 ): CommunityRepository {
     override fun getPosts(uuid: String): Flow<PagingData<PostResult>> {
         val pagingConfig = PagingConfig(
@@ -201,6 +204,52 @@ class CommunityRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.e("CommunityRepository", "Error adding comment to post $postId", e)
             emit(Resource.Error(e.message ?: context.getString(R.string.community_error_comment_failed)))
+        }
+    }
+
+    override fun generateAIPost(prompt: String): Flow<Resource<String>> {
+        return flow {
+            emit(Resource.Loading())
+
+            try {
+                val content = content {
+                    text(prompt)
+                }
+                val response = generativeModel.generateContent(content)
+                val generatedText = response.text?.trim() ?: ""
+
+                if (generatedText.isNotEmpty()) {
+                    emit(Resource.Success(generatedText))
+                } else {
+                    emit(Resource.Error(context.getString(R.string.community_error_ai_empty_response)))
+                }
+            } catch (e: Exception) {
+                Log.e("CommunityRepository", "Error generating AI content", e)
+                emit(Resource.Error(e.message ?: context.getString(R.string.community_error_ai_failed)))
+            }
+        }
+    }
+
+    override fun addPost(post: Post): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+
+        try {
+            val postData = mapOf(
+                "authorId" to post.authorId,
+                "authorType" to post.authorType,
+                "content" to post.content,
+                "createdAt" to FieldValue.serverTimestamp()
+            )
+
+            val result = firestore.collection(FirebaseKeys.POSTS_COLLECTION)
+                .add(postData)
+                .await()
+
+            Log.d("CommunityRepository", "Post added with ID: ${result.id}")
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            Log.e("CommunityRepository", "Error adding post", e)
+            emit(Resource.Error(e.message ?: context.getString(R.string.community_error_post_failed)))
         }
     }
 }
