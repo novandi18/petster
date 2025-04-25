@@ -7,6 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.FirebaseKeys
 import com.novandiramadhan.petster.data.paging.CommunityPagingSource
@@ -62,7 +63,10 @@ class CommunityRepositoryImpl @Inject constructor(
             if (postSnapshot.exists()) {
                 val post = postSnapshot.toObject(Post::class.java)?.copy(id = postSnapshot.id)
 
-                val commentsSnapshot = postRef.collection(FirebaseKeys.POST_COMMENTS_COLLECTION).get().await()
+                val commentsSnapshot = postRef.collection(FirebaseKeys.POST_COMMENTS_COLLECTION)
+                    .orderBy("createdAt", Query.Direction.ASCENDING)
+                    .get()
+                    .await()
                 val initialComments = commentsSnapshot.documents.mapNotNull { doc ->
                     doc.toObject(PostComment::class.java)?.copy(id = doc.id)
                 }
@@ -168,6 +172,35 @@ class CommunityRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Log.e("CommunityRepository", "Error toggling like for post $postId by user $uuid", e)
             emit(Resource.Error(e.message ?: context.getString(R.string.community_error_like_failed)))
+        }
+    }
+
+    override fun addComment(
+        postId: String,
+        comment: PostComment
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+
+        try {
+            val postRef = firestore.collection(FirebaseKeys.POSTS_COLLECTION).document(postId)
+
+            val commentData = mapOf(
+                "authorId" to comment.authorId,
+                "authorType" to comment.authorType,
+                "comment" to comment.comment,
+                "replyToCommentId" to comment.replyToCommentId,
+                "createdAt" to FieldValue.serverTimestamp()
+            )
+
+            val result = postRef.collection(FirebaseKeys.POST_COMMENTS_COLLECTION)
+                .add(commentData)
+                .await()
+
+            Log.d("CommunityRepository", "Comment added to post $postId with ID: ${result.id}")
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            Log.e("CommunityRepository", "Error adding comment to post $postId", e)
+            emit(Resource.Error(e.message ?: context.getString(R.string.community_error_comment_failed)))
         }
     }
 }
