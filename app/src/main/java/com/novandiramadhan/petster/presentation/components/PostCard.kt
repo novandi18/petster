@@ -45,6 +45,7 @@ import java.util.Date
 @Composable
 fun PostCard(
     post: PostResult,
+    isLiked: Boolean = post.isLiked,
     onClick: () -> Unit = {},
     onLikeClick: (String) -> Unit = {}
 ) {
@@ -57,6 +58,9 @@ fun PostCard(
     val postId = post.post?.id ?: ""
     val postContent = post.post?.content ?: ""
     val postDate = post.post?.createdAt
+    val likeCountAdjustment = if (isLiked != post.isLiked) {
+        if (isLiked) 1 else -1
+    } else 0
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -154,14 +158,14 @@ fun PostCard(
                             .padding(6.dp)
                     ) {
                         Icon(
-                            imageVector = if (post.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                            imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                             contentDescription = stringResource(R.string.like),
-                            tint = if (post.isLiked) Red else MaterialTheme.colorScheme.onSurface.copy(.7f)
+                            tint = if (isLiked) Red else MaterialTheme.colorScheme.onSurface.copy(.7f)
                         )
                     }
 
                     Text(
-                        text = "${post.likeCount}",
+                        text = "${post.likeCount + likeCountAdjustment}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
