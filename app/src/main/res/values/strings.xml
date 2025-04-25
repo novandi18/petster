@@ -214,6 +214,25 @@
     <string name="no_comments">No comments yet.</string>
     <string name="community_error_comment_failed">Error adding comment to this post, please try again.</string>
 
+    <!--  Community New Post Screen  -->
+    <string name="create_community_post">Create Community Post</string>
+    <string-array name="create_community_post_ai">
+        <item>Improve Writing</item>
+        <item>Make More Engaging</item>
+        <item>Add Discussion Question</item>
+        <item>Reformat as List</item>
+        <item>Simplify Language</item>
+    </string-array>
+    <string-array name="create_community_post_ai_prompt">
+        <item>Periksa teks berikut untuk kesalahan tata bahasa, ejaan, kejelasan, dan alur. Sajikan kembali teks yang sudah diperbaiki agar lebih mudah dibaca dan menarik untuk komunitas adopsi hewan peliharaan. Jangan tambahkan komentar atau penjelasan lain, cukup berikan teks finalnya. Berikan hanya teks hasilnya saja dalam format teks biasa (plain text), tanpa markdown atau format khusus, dan pastikan panjangnya tidak melebihi 1000 karakter: \n%s</item>
+        <item>Tulis ulang teks berikut agar lebih menarik dan mendorong interaksi (komentar/pertanyaan) dari anggota komunitas adopsi hewan peliharaan. Fokus pada penggunaan kata-kata yang hangat dan ramah. Berikan hanya teks yang sudah ditulis ulang sebagai output. Berikan hanya teks hasilnya saja dalam format teks biasa (plain text), tanpa markdown atau format khusus, dan pastikan panjangnya tidak melebihi 1000 karakter: \n%s</item>
+        <item>Tambahkan satu pertanyaan relevan di akhir teks berikut untuk mendorong diskusi dan balasan dari anggota komunitas adopsi hewan peliharaan. Sajikan kembali seluruh teks postingan termasuk pertanyaan di akhir. Berikan hanya teks finalnya. Berikan hanya teks hasilnya saja dalam format teks biasa (plain text), tanpa markdown atau format khusus, dan pastikan panjangnya tidak melebihi 1000 karakter: \n%s</item>
+        <item>Ubah teks berikut menjadi daftar poin-poin (menggunakan bullet points atau nomor) agar lebih mudah dibaca, terutama jika berisi langkah-langkah, tips, atau karakteristik. Ekstrak poin-poin penting dari teks. Berikan hanya daftar yang sudah diformat sebagai output. Berikan hanya teks hasilnya saja dalam format teks biasa (plain text), tanpa markdown atau format khusus, dan pastikan panjangnya tidak melebihi 1000 karakter: \n%s</item>
+        <item>Tulis ulang teks berikut menggunakan bahasa yang lebih sederhana dan mudah dipahami oleh audiens umum di komunitas adopsi hewan peliharaan, hindari jargon teknis jika memungkinkan. Berikan hanya teks yang sudah disederhanakan sebagai output. Berikan hanya teks hasilnya saja dalam format teks biasa (plain text), tanpa markdown atau format khusus, dan pastikan panjangnya tidak melebihi 1000 karakter: \n%s</item>
+    </string-array>
+    <string name="new_post_field_placeholder">What\'s on your mind?</string>
+    <string name="community_error_post_failed">Failed to create post. Please try again.</string>
+
     <!--  Loading  -->
     <string name="post_loading">Your post is currently being uploaded. Please wait a moment.</string>
     <string name="update_pet_loading">Your pet is currently being updated. Please wait a moment.</string>
@@ -394,6 +413,10 @@
     <string name="community_error_network">Network error loading community posts. Please check your connection and try again.</string>
     <string name="community_error_unexpected">An unexpected error occurred while loading posts</string>
     <string name="community_error_like_failed">Error to like/unlike the post</string>
+
+    <!--  AI Message  -->
+    <string name="community_error_ai_empty_response">The AI couldn\'t generate a meaningful response. Please try rephrasing your post.</string>
+    <string name="community_error_ai_failed">Failed to enhance your post with AI. Please try again later.</string>
 
     <!--  Other Message  -->
     <string name="error_unknown">An unknown error occurred.</string>
