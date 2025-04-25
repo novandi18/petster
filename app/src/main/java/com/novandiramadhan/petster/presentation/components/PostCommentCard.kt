@@ -61,6 +61,7 @@ fun PostCommentCard(
     var canExpand by remember { mutableStateOf(false) }
 
     val showMoreText = stringResource(if (isExpanded) R.string.show_less else R.string.show_more)
+    val isReply = !replyAuthorName.isNullOrBlank()
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -125,10 +126,19 @@ fun PostCommentCard(
 
                 Box(modifier = Modifier.padding(top = 4.dp, end = 6.dp)) {
                     Column {
-                        val prefix = if (replyAuthorName.isNullOrBlank()) "" else "@$replyAuthorName "
                         Text(
                             text = buildAnnotatedString {
-                                append(prefix + commentText)
+                                if (isReply) {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = Blue,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    ) {
+                                        append("@$replyAuthorName ")
+                                    }
+                                }
+                                append(commentText)
                                 if (canExpand) {
                                     append(" ")
                                     withStyle(
