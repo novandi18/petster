@@ -7,6 +7,7 @@ import com.novandiramadhan.petster.common.types.UserType
 import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.domain.datastore.AuthDataStore
 import com.novandiramadhan.petster.domain.model.AuthState
+import com.novandiramadhan.petster.domain.model.PostComment
 import com.novandiramadhan.petster.domain.model.PostResult
 import com.novandiramadhan.petster.domain.usecase.CommunityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,9 @@ class CommunityPostViewModel @Inject constructor(
 
     private val _post: MutableStateFlow<Resource<PostResult>?> = MutableStateFlow(null)
     val post: StateFlow<Resource<PostResult>?> = _post.asStateFlow()
+
+    private val _comment: MutableStateFlow<Resource<Unit>?> = MutableStateFlow(null)
+    val comment: StateFlow<Resource<Unit>?> = _comment.asStateFlow()
 
     private val _replyToCommentId = MutableStateFlow<String?>(null)
     val replyToCommentId: StateFlow<String?> = _replyToCommentId.asStateFlow()
@@ -111,8 +115,25 @@ class CommunityPostViewModel @Inject constructor(
         }
     }
 
+    fun addComment(postId: String, comment: PostComment) {
+        viewModelScope.launch {
+            communityUseCase.addComment(postId, comment)
+                .catch { e ->
+                    Log.e("CommunityPostViewModel", "Error adding comment", e)
+                    _comment.value = Resource.Error(e.message.toString())
+                }
+                .collect { resource ->
+                    _comment.value = resource
+                }
+        }
+    }
+
     fun clearReplyTo() {
         _replyToCommentId.value = null
         _replyToAuthorName.value = null
+    }
+
+    fun resetCommentState() {
+        _comment.value = null
     }
 }
