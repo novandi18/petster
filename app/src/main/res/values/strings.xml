@@ -212,6 +212,7 @@
     <string name="replying_to">Replying to %1$s</string>
     <string name="write_reply_hint">Write reply to %1$s</string>
     <string name="no_comments">No comments yet.</string>
+    <string name="community_error_comment_failed">Error adding comment to this post, please try again.</string>
 
     <!--  Loading  -->
     <string name="post_loading">Your post is currently being uploaded. Please wait a moment.</string>
