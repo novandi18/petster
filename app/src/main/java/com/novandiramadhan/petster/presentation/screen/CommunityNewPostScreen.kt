@@ -138,12 +138,14 @@ fun CommunityNewPostScreen(
                         isLoading = isGenerating && activeGenerationOption == option,
                         isDisabled = isGenerating || postStatus is Resource.Loading,
                     ) {
-                        val prompt = PostAIPromptHelper.getPromptForOption(
-                            context = context,
-                            selectedOption = option,
-                            postText = postText
-                        )
-                        viewModel.generateAIContent(prompt, option)
+                        if (postText.isNotEmpty()) {
+                            val prompt = PostAIPromptHelper.getPromptForOption(
+                                context = context,
+                                selectedOption = option,
+                                postText = postText
+                            )
+                            viewModel.generateAIContent(prompt, option)
+                        }
                     }
                 }
             }
