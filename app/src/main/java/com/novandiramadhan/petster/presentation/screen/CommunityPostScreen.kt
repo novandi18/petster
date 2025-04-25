@@ -1,5 +1,6 @@
 package com.novandiramadhan.petster.presentation.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +53,7 @@ import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.utils.capitalize
 import com.novandiramadhan.petster.common.utils.formatPostDate
 import com.novandiramadhan.petster.data.resource.Resource
+import com.novandiramadhan.petster.domain.model.PostComment
 import com.novandiramadhan.petster.domain.model.PostResult
 import com.novandiramadhan.petster.domain.model.UserResult
 import com.novandiramadhan.petster.presentation.components.PostCommentCard
@@ -66,16 +69,39 @@ fun CommunityPostScreen(
     postId: String,
     back: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val authState by viewModel.authState.collectAsState()
     val postState by viewModel.post.collectAsState()
     val replyToCommentId by viewModel.replyToCommentId.collectAsState()
     val replyToAuthorName by viewModel.replyToAuthorName.collectAsState()
+    val commentState by viewModel.comment.collectAsState()
 
     LaunchedEffect(postId, authState) {
         authState?.let { auth ->
             auth.uuid?.let { uuid ->
                 viewModel.getPost(postId, uuid)
             }
+        }
+    }
+
+    LaunchedEffect(commentState) {
+        when (commentState) {
+            is Resource.Success -> {
+                authState?.uuid?.let { uuid ->
+                    viewModel.getPost(postId, uuid)
+                    viewModel.resetCommentState()
+                    viewModel.clearReplyTo()
+                }
+            }
+            is Resource.Error -> {
+                Toast.makeText(
+                    context,
+                    commentState?.message ?: context.getString(R.string.community_error_comment_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+                viewModel.resetCommentState()
+            }
+            else -> {}
         }
     }
 
@@ -113,12 +139,24 @@ fun CommunityPostScreen(
                         clip = false
                     ),
                 onSubmit = { comment ->
+                    authState?.let { auth ->
+                        auth.uuid?.let { uuid ->
+                            val newComment = PostComment(
+                                authorId = uuid,
+                                authorType = auth.userType.name.lowercase(),
+                                comment = comment,
+                                replyToCommentId = replyToCommentId
+                            )
+                            viewModel.addComment(postId, newComment)
+                        }
+                    }
                 },
                 replyOnCommentId = replyToCommentId,
                 replyOnCommentAuthorName = replyToAuthorName,
                 onCancelReply = {
                     viewModel.clearReplyTo()
-                }
+                },
+                isLoading = commentState is Resource.Loading
             )
         }
     ) { paddingValues ->
@@ -217,7 +255,7 @@ fun CommunityPostScreen(
                                                     else -> "Unknown"
                                                 }
                                                 viewModel.setReplyTo(comment.id, authorName)
-                                            }
+                                            },
                                         )
                                     }
                                 }
