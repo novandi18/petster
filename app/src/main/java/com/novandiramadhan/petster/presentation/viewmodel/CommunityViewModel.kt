@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.novandiramadhan.petster.common.types.UserType
+import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.domain.datastore.AuthDataStore
 import com.novandiramadhan.petster.domain.model.AuthState
 import com.novandiramadhan.petster.domain.model.PostResult
@@ -30,6 +31,9 @@ class CommunityViewModel @Inject constructor(
 ): ViewModel() {
     private val _authState: MutableStateFlow<AuthState?> = MutableStateFlow(null)
     val authState: StateFlow<AuthState?> = _authState.asStateFlow()
+
+    private val _likedPostsMap = MutableStateFlow<Map<String, Boolean>>(mapOf())
+    val likedPostsMap: StateFlow<Map<String, Boolean>> = _likedPostsMap.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val communityPosts: Flow<PagingData<PostResult>> = authState.flatMapLatest { state ->
@@ -56,6 +60,42 @@ class CommunityViewModel @Inject constructor(
                 }
                 .collect { result ->
                     _authState.value = result
+                }
+        }
+    }
+
+    fun toggleLike(postId: String, isLike: Boolean) {
+        viewModelScope.launch {
+            val currentUuid = _authState.value?.uuid
+            if (currentUuid == null) {
+                Log.e("CommunityViewModel", "Cannot toggle like, user UUID is null")
+                return@launch
+            }
+
+            _likedPostsMap.value = _likedPostsMap.value.toMutableMap().apply {
+                put(postId, isLike)
+            }
+
+            communityUseCase.togglePostLike(postId, currentUuid, isLike)
+                .catch { e ->
+                    Log.e("CommunityViewModel", "Error toggling like for post $postId", e)
+                    _likedPostsMap.value = _likedPostsMap.value.toMutableMap().apply {
+                        remove(postId)
+                    }
+                }
+                .collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            Log.d("CommunityViewModel", "Like toggled successfully for post $postId")
+                        }
+                        is Resource.Error -> {
+                            Log.e("CommunityViewModel", "Failed to toggle like: ${resource.message}")
+                            _likedPostsMap.value = _likedPostsMap.value.toMutableMap().apply {
+                                remove(postId)
+                            }
+                        }
+                        is Resource.Loading -> {}
+                    }
                 }
         }
     }

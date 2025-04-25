@@ -27,6 +27,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -45,6 +46,7 @@ import com.novandiramadhan.petster.presentation.ui.theme.Black
 import com.novandiramadhan.petster.presentation.ui.theme.LimeGreen
 import com.novandiramadhan.petster.presentation.ui.theme.PetsterTheme
 import com.novandiramadhan.petster.presentation.viewmodel.CommunityViewModel
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +55,7 @@ fun CommunityScreen(
     navigateTo: (Destinations) -> Unit = {},
 ) {
     val posts = viewModel.communityPosts.collectAsLazyPagingItems()
+    val likedPostsMap by viewModel.likedPostsMap.collectAsState()
     val refreshState = rememberPullToRefreshState()
     val isRefreshing = posts.loadState.refresh is LoadState.Loading
 
@@ -172,6 +175,7 @@ fun CommunityScreen(
                                 post?.let {
                                     PostCard(
                                         post = it,
+                                        isLiked = likedPostsMap[it.post?.id] ?: it.isLiked,
                                         onClick = {
                                             navigateTo(
                                                 Destinations.CommunityPost(
@@ -180,7 +184,12 @@ fun CommunityScreen(
                                             )
                                         },
                                         onLikeClick = { postId ->
-
+                                            val post = posts[index]
+                                            post?.let { currentPost ->
+                                                val currentLikeState = likedPostsMap[postId] ?: currentPost.isLiked
+                                                val newLikeState = !currentLikeState
+                                                viewModel.toggleLike(postId, newLikeState)
+                                            }
                                         }
                                     )
                                 }
