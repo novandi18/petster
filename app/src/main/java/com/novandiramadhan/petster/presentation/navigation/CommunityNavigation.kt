@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.novandiramadhan.petster.presentation.screen.CommunityNewPostScreen
 import com.novandiramadhan.petster.presentation.screen.CommunityPostScreen
 
 fun NavGraphBuilder.communityGraph(navController: NavController) {
@@ -15,6 +16,23 @@ fun NavGraphBuilder.communityGraph(navController: NavController) {
             back = {
                 navController.popBackStack()
             },
+        )
+    }
+
+    composable<Destinations.CommunityNewPost> { backStackEntry ->
+        CommunityNewPostScreen(
+            back = {
+                navController.popBackStack()
+            },
+            navigateTo = { destination ->
+                navController.navigate(destination) {
+                    if (destination is Destinations.Community) {
+                        popUpTo(Destinations.Community) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
         )
     }
 }
