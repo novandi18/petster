@@ -188,6 +188,10 @@ fun CommunityPostScreen(
 
     CommunityPostMenu(
         onEditClick = {
+            navigateTo(Destinations.CommunityUpdatePost(
+                postId = postId,
+                content = postState?.data?.post?.content ?: "",
+            ))
         },
         onDeleteClick = {
             showDeleteDialog.value = true
