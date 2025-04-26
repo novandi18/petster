@@ -35,7 +35,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -65,6 +69,8 @@ import com.novandiramadhan.petster.presentation.components.CommunityPostMenu
 import com.novandiramadhan.petster.presentation.components.PostCommentCard
 import com.novandiramadhan.petster.presentation.components.PostCommentField
 import com.novandiramadhan.petster.presentation.navigation.Destinations
+import com.novandiramadhan.petster.presentation.ui.theme.Black
+import com.novandiramadhan.petster.presentation.ui.theme.LimeGreen
 import com.novandiramadhan.petster.presentation.ui.theme.PetsterTheme
 import com.novandiramadhan.petster.presentation.ui.theme.Red
 import com.novandiramadhan.petster.presentation.viewmodel.CommunityPostViewModel
@@ -86,6 +92,8 @@ fun CommunityPostScreen(
     val deletePost by viewModel.deletePost.collectAsState()
     val showMore = remember { mutableStateOf(false) }
     val showDeleteDialog = remember { mutableStateOf(false) }
+    val refreshState = rememberPullToRefreshState()
+    val refreshing = postState is Resource.Loading
 
     val isAuthor = remember(postState, authState) {
         if (postState is Resource.Success && authState != null) {
@@ -169,7 +177,7 @@ fun CommunityPostScreen(
                 }
             },
             dismissButton = {
-                androidx.compose.material3.TextButton(
+                TextButton(
                     onClick = { showDeleteDialog.value = false }
                 ) {
                     Text(text = stringResource(id = R.string.cancel))
@@ -180,11 +188,8 @@ fun CommunityPostScreen(
 
     CommunityPostMenu(
         onEditClick = {
-            // Handle edit post logic here - navigate to edit screen
-            // You'll need to implement this navigation
         },
         onDeleteClick = {
-            // Show confirmation dialog instead of immediate deletion
             showDeleteDialog.value = true
         },
         isVisible = showMore.value,
@@ -261,10 +266,26 @@ fun CommunityPostScreen(
             )
         }
     ) { paddingValues ->
-        Box(
+        PullToRefreshBox(
+            state = refreshState,
+            onRefresh = {
+                authState?.uuid?.let { uuid ->
+                    viewModel.getPost(postId, uuid)
+                }
+            },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            isRefreshing = refreshing,
+            indicator = {
+                Indicator(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    isRefreshing = refreshing,
+                    color = Black,
+                    containerColor = LimeGreen,
+                    state = refreshState
+                )
+            }
         ) {
             when (postState) {
                 is Resource.Loading -> {
