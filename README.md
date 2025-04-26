@@ -46,6 +46,10 @@ Model-View-ViewModel (MVVM)
 ## Screenshots
 ![Petster banner](https://github.com/user-attachments/assets/59ec1fd2-a47e-4a89-af93-c124a2b3465f)
 
+## Demo App
+You can download a demo version of the Petster application (APK) to try it out directly on your Android device.
+[Download Petster Demo APK from Google Drive](https://drive.google.com/file/d/13l1GKsmoVAgaeqMb_pHlBqnjjgjlB9eN/view?usp=sharing)
+
 ## Contributing
 Contributions are welcome! We appreciate any help making Petster better.
 
