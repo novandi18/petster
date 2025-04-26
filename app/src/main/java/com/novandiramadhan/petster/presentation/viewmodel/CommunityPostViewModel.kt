@@ -33,6 +33,9 @@ class CommunityPostViewModel @Inject constructor(
     private val _comment: MutableStateFlow<Resource<Unit>?> = MutableStateFlow(null)
     val comment: StateFlow<Resource<Unit>?> = _comment.asStateFlow()
 
+    private val _deletePost: MutableStateFlow<Resource<Unit>?> = MutableStateFlow(null)
+    val deletePost: StateFlow<Resource<Unit>?> = _deletePost.asStateFlow()
+
     private val _replyToCommentId = MutableStateFlow<String?>(null)
     val replyToCommentId: StateFlow<String?> = _replyToCommentId.asStateFlow()
 
@@ -124,6 +127,19 @@ class CommunityPostViewModel @Inject constructor(
                 }
                 .collect { resource ->
                     _comment.value = resource
+                }
+        }
+    }
+
+    fun deletePost(postId: String) {
+        viewModelScope.launch {
+            communityUseCase.deletePost(postId)
+                .catch { e ->
+                    Log.e("CommunityPostViewModel", "Error deleting post", e)
+                    _deletePost.value = Resource.Error(e.message.toString())
+                }
+                .collect { result ->
+                    _deletePost.value = result
                 }
         }
     }

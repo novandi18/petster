@@ -16,6 +16,15 @@ fun NavGraphBuilder.communityGraph(navController: NavController) {
             back = {
                 navController.popBackStack()
             },
+            navigateTo = { destination ->
+                navController.navigate(destination) {
+                    if (destination is Destinations.Community) {
+                        popUpTo(Destinations.Community) {
+                            inclusive = true
+                        }
+                    }
+                }
+            }
         )
     }
 

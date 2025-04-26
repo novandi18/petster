@@ -22,7 +22,10 @@ import androidx.compose.material.icons.automirrored.outlined.Comment
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +40,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,8 +61,10 @@ import com.novandiramadhan.petster.data.resource.Resource
 import com.novandiramadhan.petster.domain.model.PostComment
 import com.novandiramadhan.petster.domain.model.PostResult
 import com.novandiramadhan.petster.domain.model.UserResult
+import com.novandiramadhan.petster.presentation.components.CommunityPostMenu
 import com.novandiramadhan.petster.presentation.components.PostCommentCard
 import com.novandiramadhan.petster.presentation.components.PostCommentField
+import com.novandiramadhan.petster.presentation.navigation.Destinations
 import com.novandiramadhan.petster.presentation.ui.theme.PetsterTheme
 import com.novandiramadhan.petster.presentation.ui.theme.Red
 import com.novandiramadhan.petster.presentation.viewmodel.CommunityPostViewModel
@@ -67,7 +74,8 @@ import com.novandiramadhan.petster.presentation.viewmodel.CommunityPostViewModel
 fun CommunityPostScreen(
     viewModel: CommunityPostViewModel = hiltViewModel(),
     postId: String,
-    back: () -> Unit = {}
+    back: () -> Unit = {},
+    navigateTo: (Destinations) -> Unit = {}
 ) {
     val context = LocalContext.current
     val authState by viewModel.authState.collectAsState()
@@ -75,6 +83,16 @@ fun CommunityPostScreen(
     val replyToCommentId by viewModel.replyToCommentId.collectAsState()
     val replyToAuthorName by viewModel.replyToAuthorName.collectAsState()
     val commentState by viewModel.comment.collectAsState()
+    val deletePost by viewModel.deletePost.collectAsState()
+    val showMore = remember { mutableStateOf(false) }
+    val showDeleteDialog = remember { mutableStateOf(false) }
+
+    val isAuthor = remember(postState, authState) {
+        if (postState is Resource.Success && authState != null) {
+            val post = postState?.data?.post
+            post?.authorId == authState?.uuid
+        } else false
+    }
 
     LaunchedEffect(postId, authState) {
         authState?.let { auth ->
@@ -105,6 +123,74 @@ fun CommunityPostScreen(
         }
     }
 
+    LaunchedEffect(deletePost) {
+        when (deletePost) {
+            is Resource.Success -> {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.delete_pet_success),
+                    Toast.LENGTH_SHORT
+                ).show()
+                back()
+                navigateTo(Destinations.Community)
+            }
+            is Resource.Error -> {
+                Toast.makeText(
+                    context,
+                    deletePost?.message ?: context.getString(R.string.community_error_delete_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            else -> {}
+        }
+    }
+
+    if (showDeleteDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog.value = false },
+            title = { Text(stringResource(R.string.delete_post)) },
+            text = { Text(stringResource(R.string.delete_pet_confirmation)) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDeleteDialog.value = false
+                        viewModel.deletePost(postId)
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.delete_pet_success),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Red
+                    )
+                ) {
+                    Text(text = stringResource(id = R.string.confirm))
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = { showDeleteDialog.value = false }
+                ) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
+            }
+        )
+    }
+
+    CommunityPostMenu(
+        onEditClick = {
+            // Handle edit post logic here - navigate to edit screen
+            // You'll need to implement this navigation
+        },
+        onDeleteClick = {
+            // Show confirmation dialog instead of immediate deletion
+            showDeleteDialog.value = true
+        },
+        isVisible = showMore.value,
+        onDismiss = { showMore.value = false }
+    )
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -117,7 +203,8 @@ fun CommunityPostScreen(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.background,
                     titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    actionIconContentColor = MaterialTheme.colorScheme.onBackground
                 ),
                 navigationIcon = {
                     IconButton(onClick = back) {
@@ -125,6 +212,20 @@ fun CommunityPostScreen(
                             imageVector = Icons.Rounded.Close,
                             contentDescription = stringResource(R.string.back),
                         )
+                    }
+                },
+                actions = {
+                    if (isAuthor) {
+                        IconButton(
+                            onClick = {
+                                showMore.value = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.MoreHoriz,
+                                contentDescription = stringResource(R.string.more),
+                            )
+                        }
                     }
                 }
             )
