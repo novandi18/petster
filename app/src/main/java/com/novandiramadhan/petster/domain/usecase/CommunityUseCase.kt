@@ -15,4 +15,5 @@ interface CommunityUseCase {
     fun generateAIPost(prompt: String): Flow<Resource<String>>
     fun addPost(post: Post): Flow<Resource<Unit>>
     fun deletePost(postId: String): Flow<Resource<Unit>>
+    fun updatePost(postId: String, post: Post): Flow<Resource<Unit>>
 }

@@ -267,4 +267,29 @@ class CommunityRepositoryImpl @Inject constructor(
             emit(Resource.Error(e.message ?: context.getString(R.string.community_error_delete_failed)))
         }
     }
+
+    override fun updatePost(
+        postId: String,
+        post: Post
+    ): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+
+        try {
+            val postRef = firestore.collection(FirebaseKeys.POSTS_COLLECTION).document(postId)
+            val postData = mapOf(
+                "content" to post.content
+            )
+            postRef.update(postData).await()
+
+            Log.d("CommunityRepository", "Post $postId updated successfully")
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            Log.e("CommunityRepository", "Error updating post $postId", e)
+            emit(
+                Resource.Error(
+                    e.message ?: context.getString(R.string.community_post_error_update)
+                )
+            )
+        }
+    }
 }

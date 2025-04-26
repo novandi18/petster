@@ -38,4 +38,9 @@ class CommunityInteractor @Inject constructor(
 
     override fun deletePost(postId: String): Flow<Resource<Unit>> =
         communityRepository.deletePost(postId)
+
+    override fun updatePost(
+        postId: String,
+        post: Post
+    ): Flow<Resource<Unit>> = communityRepository.updatePost(postId, post)
 }
