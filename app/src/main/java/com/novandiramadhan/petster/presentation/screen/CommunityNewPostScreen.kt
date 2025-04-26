@@ -92,7 +92,7 @@ fun CommunityNewPostScreen(
                 actions = {
                     if (postStatus is Resource.Loading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(24.dp).padding(end = 16.dp),
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     } else {
