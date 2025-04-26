@@ -46,5 +46,15 @@ Model-View-ViewModel (MVVM)
 ## Screenshots
 ![Petster banner](https://github.com/user-attachments/assets/59ec1fd2-a47e-4a89-af93-c124a2b3465f)
 
-## Others
-Soon...
+## Contributing
+Contributions are welcome! We appreciate any help making Petster better.
+
+* **Report Bugs / Suggest Features:** Please open an **Issue** on GitHub.
+* **Submit Code:**
+    1.  Fork the repository.
+    2.  Create a new branch (`git checkout -b my-change`).
+    3.  Make your changes and commit them (`git commit -am 'Add some feature'`).
+    4.  Push to your fork (`git push origin my-change`).
+    5.  Open a **Pull Request** against the `main` (or `develop`) branch.
+
+Thank you for contributing!
