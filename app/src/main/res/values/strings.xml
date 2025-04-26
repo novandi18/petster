@@ -237,6 +237,11 @@
     <string name="new_post_field_placeholder">What\'s on your mind?</string>
     <string name="community_error_post_failed">Failed to create post. Please try again.</string>
 
+    <!--  Community Post Screen  -->
+    <string name="edit_community_post">Edit Community Posts</string>
+    <string name="community_post_error_update">Error updating this post, please try again.</string>
+    <string name="community_post_success_update">Post updated successfully</string>
+
     <!--  Loading  -->
     <string name="post_loading">Your post is currently being uploaded. Please wait a moment.</string>
     <string name="update_pet_loading">Your pet is currently being updated. Please wait a moment.</string>
