@@ -12,6 +12,7 @@
     <string name="filter_options">Filter Options</string>
     <string name="clear_all">Clear All</string>
     <string name="apply">Apply</string>
+    <string name="more">More</string>
 
     <!--  Welcome Screen  -->
     <string name="welcome_message">Give a furry friend a forever home and adopt a pet today.</string>
@@ -213,6 +214,9 @@
     <string name="write_reply_hint">Write reply to %1$s</string>
     <string name="no_comments">No comments yet.</string>
     <string name="community_error_comment_failed">Error adding comment to this post, please try again.</string>
+    <string name="community_error_delete_failed">Error deleting this post, please try again.</string>
+    <string name="edit_post">Edit post</string>
+    <string name="delete_post">Delete post</string>
 
     <!--  Community New Post Screen  -->
     <string name="create_community_post">Create Community Post</string>
