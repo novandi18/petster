@@ -252,4 +252,19 @@ class CommunityRepositoryImpl @Inject constructor(
             emit(Resource.Error(e.message ?: context.getString(R.string.community_error_post_failed)))
         }
     }
+
+    override fun deletePost(postId: String): Flow<Resource<Unit>> = flow {
+        emit(Resource.Loading())
+
+        try {
+            val postRef = firestore.collection(FirebaseKeys.POSTS_COLLECTION).document(postId)
+            postRef.delete().await()
+
+            Log.d("CommunityRepository", "Post $postId and all related data deleted successfully")
+            emit(Resource.Success(Unit))
+        } catch (e: Exception) {
+            Log.e("CommunityRepository", "Error deleting post $postId", e)
+            emit(Resource.Error(e.message ?: context.getString(R.string.community_error_delete_failed)))
+        }
+    }
 }

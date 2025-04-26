@@ -14,4 +14,5 @@ interface CommunityUseCase {
     fun addComment(postId: String, comment: PostComment): Flow<Resource<Unit>>
     fun generateAIPost(prompt: String): Flow<Resource<String>>
     fun addPost(post: Post): Flow<Resource<Unit>>
+    fun deletePost(postId: String): Flow<Resource<Unit>>
 }
