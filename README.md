@@ -15,6 +15,10 @@
 
 </div>
 
+## Petster Web
+
+Looking for the Web version of Petster? Check out the [Petster Web Repository](https://github.com/novandi18/petster-web).
+
 ## Features
 - **Multi User Authentication:** Sign in as Shelter or Volunteer, easy switch account.
 - **Explore Pets:** Browse and filter pet listings from volunteers.
