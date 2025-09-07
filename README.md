@@ -15,6 +15,10 @@
 
 </div>
 
+## Petster Web
+
+Looking for the Web version of Petster? Check out the [Petster Web Repository](https://github.com/novandi18/petster-web).
+
 ## Features
 - **Multi User Authentication:** Sign in as Shelter or Volunteer, easy switch account.
 - **Explore Pets:** Browse and filter pet listings from volunteers.
@@ -46,5 +50,19 @@ Model-View-ViewModel (MVVM)
 ## Screenshots
 ![Petster banner](https://github.com/user-attachments/assets/59ec1fd2-a47e-4a89-af93-c124a2b3465f)
 
-## Others
-Soon...
+## Demo App
+You can download a demo version of the Petster application (APK) to try it out directly on your Android device.
+[Download Petster Demo APK from Google Drive](https://drive.google.com/file/d/13l1GKsmoVAgaeqMb_pHlBqnjjgjlB9eN/view?usp=sharing)
+
+## Contributing
+Contributions are welcome! We appreciate any help making Petster better.
+
+* **Report Bugs / Suggest Features:** Please open an **Issue** on GitHub.
+* **Submit Code:**
+    1.  Fork the repository.
+    2.  Create a new branch (`git checkout -b my-change`).
+    3.  Make your changes and commit them (`git commit -am 'Add some feature'`).
+    4.  Push to your fork (`git push origin my-change`).
+    5.  Open a **Pull Request** against the `main` (or `develop`) branch.
+
+Thank you for contributing!
