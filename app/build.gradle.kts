@@ -21,7 +21,7 @@ if (localPropertiesFile.exists() && localPropertiesFile.isFile) {
 
 android {
     namespace = "com.novandiramadhan.petster"
-    compileSdk = 35
+    compileSdk = 36
 
     room {
         schemaDirectory("$projectDir/schemas")
@@ -30,7 +30,7 @@ android {
     defaultConfig {
         applicationId = "com.novandiramadhan.petster"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
