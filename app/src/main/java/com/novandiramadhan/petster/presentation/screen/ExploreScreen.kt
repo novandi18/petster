@@ -133,7 +133,7 @@ fun ExploreScreen(
         val allPermissionsGranted = permissions.entries.all { it.value }
         if (allPermissionsGranted) {
             if (isLocationEnabled(locationManager)) {
-                isLocationLoading = true // Start loading
+                isLocationLoading = true
                 val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
                 try {
                     fusedLocationClient.getCurrentLocation(
@@ -153,7 +153,7 @@ fun ExploreScreen(
                         isLocationLoading = false
                         Toast.makeText(context, context.getString(R.string.failed_get_location), Toast.LENGTH_SHORT).show()
                     }
-                } catch (e: SecurityException) {
+                } catch (_: SecurityException) {
                     isLocationLoading = false
                     Toast.makeText(context, context.getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show()
                 }
@@ -168,6 +168,38 @@ fun ExploreScreen(
     if (showLocationPermissionDialog) {
         AlertDialog(
             onDismissRequest = { showLocationPermissionDialog = false },
+            title = {
+                Text(
+                    text = context.getString(R.string.location_permission_required)
+                )
+            },
+            text = {
+                Text(
+                    text = context.getString(R.string.location_permission_required_desc)
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showLocationPermissionDialog = false
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = android.net.Uri.fromParts("package", context.packageName, null)
+                    }
+                    context.startActivity(intent)
+                }) {
+                    Text(context.getString(R.string.settings))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLocationPermissionDialog = false }) {
+                    Text(context.getString(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    if (showEnableGpsDialog) {
+        AlertDialog(
+            onDismissRequest = { showEnableGpsDialog = false },
             title = {
                 Text(
                     text = context.getString(R.string.enable_location_title)
@@ -188,7 +220,7 @@ fun ExploreScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showLocationPermissionDialog = false }) {
+                TextButton(onClick = { showEnableGpsDialog = false }) {
                     Text(context.getString(R.string.cancel))
                 }
             }
@@ -257,7 +289,7 @@ fun ExploreScreen(
                                                     isLocationLoading = false
                                                     Toast.makeText(context, context.getString(R.string.failed_get_location), Toast.LENGTH_SHORT).show()
                                                 }
-                                            } catch (e: SecurityException) {
+                                            } catch (_: SecurityException) {
                                                 isLocationLoading = false
                                                 Toast.makeText(context, context.getString(R.string.location_permission_denied), Toast.LENGTH_SHORT).show()
                                             }
@@ -380,10 +412,10 @@ fun ExploreScreen(
                         ) { index ->
                             val pet = pets[index] ?: return@items
                             PetCard(
-                                pet = if (updatedPetId == pet.id?.toString()) {
+                                pet = if (updatedPetId == pet.id) {
                                     pet.copy(isFavorite = !pet.isFavorite)
-                                } else if (updatedPetFavorites.containsKey(pet.id?.toString())) {
-                                    pet.copy(isFavorite = updatedPetFavorites[pet.id?.toString()] ?: pet.isFavorite)
+                                } else if (updatedPetFavorites.containsKey(pet.id)) {
+                                    pet.copy(isFavorite = updatedPetFavorites[pet.id] ?: pet.isFavorite)
                                 } else pet,
                                 onClick = { destinations ->
                                     navigateTo(destinations)

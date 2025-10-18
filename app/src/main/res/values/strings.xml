@@ -417,6 +417,8 @@
     <!--  Location Permission Message  -->
     <string name="location_permission_denied">Location permission denied</string>
     <string name="failed_get_location">Failed to get your location</string>
+    <string name="location_permission_required">Location Permission Required</string>
+    <string name="location_permission_required_desc">This app needs location permission to find pets near you. Please grant location permission in settings.</string>
 
     <!--  Communities Message  -->
     <string name="community_error_network">Network error loading community posts. Please check your connection and try again.</string>
