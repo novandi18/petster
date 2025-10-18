@@ -32,7 +32,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.novandiramadhan.petster.R
 import com.novandiramadhan.petster.common.PostAIPromptHelper
 import com.novandiramadhan.petster.presentation.components.PostAIButton
