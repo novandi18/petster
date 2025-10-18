@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FilterAlt
@@ -83,12 +84,19 @@ fun ExploreScreen(
     val updatedPetId by viewModel.updatedPetId.collectAsState()
     val updatedPetFavorites by viewModel.updatedPetFavorites.collectAsState()
     val pets = viewModel.pets.collectAsLazyPagingItems()
+    val nearbyPets = viewModel.nearbyPets.collectAsLazyPagingItems()
+    val otherPets = viewModel.otherPets.collectAsLazyPagingItems()
     val refreshState = rememberPullToRefreshState()
-    val isRefreshing = pets.loadState.refresh is LoadState.Loading
+    val isLocationFilterActive by viewModel.isLocationFilterActive.collectAsState()
+
+    val isRefreshing = if (isLocationFilterActive) {
+        nearbyPets.loadState.refresh is LoadState.Loading || otherPets.loadState.refresh is LoadState.Loading
+    } else {
+        pets.loadState.refresh is LoadState.Loading
+    }
     var showFilterDialog by remember { mutableStateOf(false) }
     var isLocationLoading by remember { mutableStateOf(false) }
     val currentFilters by viewModel.filterState.collectAsState()
-    val isLocationFilterActive by viewModel.isLocationFilterActive.collectAsState()
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -338,7 +346,12 @@ fun ExploreScreen(
         PullToRefreshBox(
             state = refreshState,
             onRefresh = {
-                pets.refresh()
+                if (isLocationFilterActive) {
+                    nearbyPets.refresh()
+                    otherPets.refresh()
+                } else {
+                    pets.refresh()
+                }
             },
             modifier = Modifier
                 .padding(innerPadding)
@@ -354,99 +367,35 @@ fun ExploreScreen(
                 )
             }
         ) {
-            when {
-                pets.loadState.refresh is LoadState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-                }
-
-                pets.loadState.refresh is LoadState.Error -> {
-                    val error = (pets.loadState.refresh as LoadState.Error).error
-                    val errorMessage = when (error) {
-                        is PetPagingError -> error.message
-                        else -> stringResource(R.string.error_unknown)
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        ErrorView(
-                            title = errorMessage,
-                            onRetry = {
-                                pets.refresh()
-                            }
-                        )
-                    }
-                }
-
-                pets.itemCount == 0 -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        EmptyView(
-                            title = stringResource(R.string.pet_list_available_empty),
-                            desc = stringResource(R.string.pet_list_available_empty_message)
-                        )
-                    }
-                }
-
-                else -> {
-                    LazyVerticalGrid(
-                        contentPadding = PaddingValues(16.dp),
-                        columns = GridCells.Fixed(2),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(
-                            count = pets.itemCount,
-                            key = { index -> pets[index]?.id ?: index }
-                        ) { index ->
-                            val pet = pets[index] ?: return@items
-                            PetCard(
-                                pet = if (updatedPetId == pet.id) {
-                                    pet.copy(isFavorite = !pet.isFavorite)
-                                } else if (updatedPetFavorites.containsKey(pet.id)) {
-                                    pet.copy(isFavorite = updatedPetFavorites[pet.id] ?: pet.isFavorite)
-                                } else pet,
-                                onClick = { destinations ->
-                                    navigateTo(destinations)
-                                },
-                                isFavoriteShow = authState?.userType == UserType.SHELTER,
-                                onFavoriteClick = { isFavorite ->
-                                    if (authState?.userType == UserType.SHELTER) {
-                                        viewModel.togglePetFavorite(
-                                            petId = pet.id.toString(),
-                                            isFavorite = isFavorite
-                                        )
-                                    }
-                                },
-                            )
-                        }
-
-                        if (pets.loadState.append is LoadState.Loading) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp)
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
-                            }
+            if (isLocationFilterActive) {
+                // Show 2 sections when location filter is active
+                ExploreTwoSectionsContent(
+                    nearbyPets = nearbyPets,
+                    otherPets = otherPets,
+                    authState = authState,
+                    updatedPetId = updatedPetId,
+                    updatedPetFavorites = updatedPetFavorites,
+                    navigateTo = navigateTo,
+                    onToggleFavorite = { petId, isFavorite ->
+                        if (authState?.userType == UserType.SHELTER) {
+                            viewModel.togglePetFavorite(petId, isFavorite)
                         }
                     }
-                }
+                )
+            } else {
+                // Show single section when location filter is NOT active
+                ExploreSingleSectionContent(
+                    pets = pets,
+                    authState = authState,
+                    updatedPetId = updatedPetId,
+                    updatedPetFavorites = updatedPetFavorites,
+                    navigateTo = navigateTo,
+                    onToggleFavorite = { petId, isFavorite ->
+                        if (authState?.userType == UserType.SHELTER) {
+                            viewModel.togglePetFavorite(petId, isFavorite)
+                        }
+                    }
+                )
             }
         }
     }
@@ -457,5 +406,264 @@ fun ExploreScreen(
 private fun ExploreScreenPreview() {
     PetsterTheme {
         ExploreScreen()
+    }
+}
+
+@Composable
+private fun ExploreTwoSectionsContent(
+    nearbyPets: androidx.paging.compose.LazyPagingItems<com.novandiramadhan.petster.domain.model.Pet>,
+    otherPets: androidx.paging.compose.LazyPagingItems<com.novandiramadhan.petster.domain.model.Pet>,
+    authState: com.novandiramadhan.petster.domain.model.AuthState?,
+    updatedPetId: String?,
+    updatedPetFavorites: Map<String, Boolean>,
+    navigateTo: (Destinations) -> Unit,
+    onToggleFavorite: (String, Boolean) -> Unit
+) {
+    when {
+        nearbyPets.loadState.refresh is LoadState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+
+        nearbyPets.loadState.refresh is LoadState.Error -> {
+            val error = (nearbyPets.loadState.refresh as LoadState.Error).error
+            val errorMessage = when (error) {
+                is PetPagingError -> error.message
+                else -> stringResource(R.string.error_unknown)
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ErrorView(
+                    title = errorMessage,
+                    onRetry = {
+                        nearbyPets.refresh()
+                        otherPets.refresh()
+                    }
+                )
+            }
+        }
+
+        nearbyPets.itemCount == 0 && otherPets.itemCount == 0 -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                EmptyView(
+                    title = stringResource(R.string.pet_list_available_empty),
+                    desc = stringResource(R.string.pet_list_available_empty_message)
+                )
+            }
+        }
+
+        else -> {
+            LazyVerticalGrid(
+                contentPadding = PaddingValues(16.dp),
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Section 1: Nearby Pets
+                if (nearbyPets.itemCount > 0) {
+                    item(span = { GridItemSpan(2) }) {
+                        Text(
+                            text = stringResource(R.string.nearby_pets),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        )
+                    }
+
+                    items(
+                        count = nearbyPets.itemCount,
+                        key = { index -> "nearby_${nearbyPets[index]?.id ?: index}" }
+                    ) { index ->
+                        val pet = nearbyPets[index] ?: return@items
+                        PetCard(
+                            pet = if (updatedPetId == pet.id) {
+                                pet.copy(isFavorite = !pet.isFavorite)
+                            } else if (updatedPetFavorites.containsKey(pet.id)) {
+                                pet.copy(isFavorite = updatedPetFavorites[pet.id] ?: pet.isFavorite)
+                            } else pet,
+                            onClick = { destinations ->
+                                navigateTo(destinations)
+                            },
+                            isFavoriteShow = authState?.userType == UserType.SHELTER,
+                            onFavoriteClick = { isFavorite ->
+                                onToggleFavorite(pet.id.toString(), isFavorite)
+                            },
+                        )
+                    }
+
+                    if (nearbyPets.loadState.append is LoadState.Loading) {
+                        item(span = { GridItemSpan(2) }) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Section 2: Other Pets (excluding nearby)
+                if (otherPets.itemCount > 0) {
+                    item(span = { GridItemSpan(2) }) {
+                        Text(
+                            text = stringResource(R.string.other_pets),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 8.dp, top = if (nearbyPets.itemCount > 0) 16.dp else 0.dp)
+                        )
+                    }
+
+                    items(
+                        count = otherPets.itemCount,
+                        key = { index -> "other_${otherPets[index]?.id ?: index}" }
+                    ) { index ->
+                        val pet = otherPets[index] ?: return@items
+                        PetCard(
+                            pet = if (updatedPetId == pet.id) {
+                                pet.copy(isFavorite = !pet.isFavorite)
+                            } else if (updatedPetFavorites.containsKey(pet.id)) {
+                                pet.copy(isFavorite = updatedPetFavorites[pet.id] ?: pet.isFavorite)
+                            } else pet,
+                            onClick = { destinations ->
+                                navigateTo(destinations)
+                            },
+                            isFavoriteShow = authState?.userType == UserType.SHELTER,
+                            onFavoriteClick = { isFavorite ->
+                                onToggleFavorite(pet.id.toString(), isFavorite)
+                            },
+                        )
+                    }
+
+                    if (otherPets.loadState.append is LoadState.Loading) {
+                        item(span = { GridItemSpan(2) }) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ExploreSingleSectionContent(
+    pets: androidx.paging.compose.LazyPagingItems<com.novandiramadhan.petster.domain.model.Pet>,
+    authState: com.novandiramadhan.petster.domain.model.AuthState?,
+    updatedPetId: String?,
+    updatedPetFavorites: Map<String, Boolean>,
+    navigateTo: (Destinations) -> Unit,
+    onToggleFavorite: (String, Boolean) -> Unit
+) {
+    when {
+        pets.loadState.refresh is LoadState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+
+        pets.loadState.refresh is LoadState.Error -> {
+            val error = (pets.loadState.refresh as LoadState.Error).error
+            val errorMessage = when (error) {
+                is PetPagingError -> error.message
+                else -> stringResource(R.string.error_unknown)
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ErrorView(
+                    title = errorMessage,
+                    onRetry = {
+                        pets.refresh()
+                    }
+                )
+            }
+        }
+
+        pets.itemCount == 0 -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                EmptyView(
+                    title = stringResource(R.string.pet_list_available_empty),
+                    desc = stringResource(R.string.pet_list_available_empty_message)
+                )
+            }
+        }
+
+        else -> {
+            LazyVerticalGrid(
+                contentPadding = PaddingValues(16.dp),
+                columns = GridCells.Fixed(2),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(
+                    count = pets.itemCount,
+                    key = { index -> pets[index]?.id ?: index }
+                ) { index ->
+                    val pet = pets[index] ?: return@items
+                    PetCard(
+                        pet = if (updatedPetId == pet.id) {
+                            pet.copy(isFavorite = !pet.isFavorite)
+                        } else if (updatedPetFavorites.containsKey(pet.id)) {
+                            pet.copy(isFavorite = updatedPetFavorites[pet.id] ?: pet.isFavorite)
+                        } else pet,
+                        onClick = { destinations ->
+                            navigateTo(destinations)
+                        },
+                        isFavoriteShow = authState?.userType == UserType.SHELTER,
+                        onFavoriteClick = { isFavorite ->
+                            onToggleFavorite(pet.id.toString(), isFavorite)
+                        },
+                    )
+                }
+
+                if (pets.loadState.append is LoadState.Loading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }

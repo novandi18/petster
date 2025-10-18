@@ -21,6 +21,16 @@ interface PetRepository {
         filter: PetFilterState? = null,
         shelterLocation: ShelterLocation? = null
     ): Flow<PagingData<Pet>>
+    fun getPetsNearby(
+        shelterId: String? = null,
+        filter: PetFilterState? = null,
+        shelterLocation: ShelterLocation
+    ): Flow<PagingData<Pet>>
+    fun getPetsExcludingNearby(
+        shelterId: String? = null,
+        filter: PetFilterState? = null,
+        shelterLocation: ShelterLocation
+    ): Flow<PagingData<Pet>>
     fun getPetById(id: String, shelterId: String?): Flow<Resource<Pet>>
     fun addViewedPet(petView: PetView): Flow<Resource<Unit>>
     fun getVolunteerDashboard(volunteerId: String): Flow<Resource<VolunteerDashboardResult>>

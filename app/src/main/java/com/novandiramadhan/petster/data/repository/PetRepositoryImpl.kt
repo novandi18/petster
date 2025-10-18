@@ -218,6 +218,60 @@ class PetRepositoryImpl @Inject constructor(
         ).flow
     }
 
+    override fun getPetsNearby(
+        shelterId: String?,
+        filter: PetFilterState?,
+        shelterLocation: ShelterLocation
+    ): Flow<PagingData<Pet>> {
+        val pagingConfig = PagingConfig(
+            pageSize = 10,
+            prefetchDistance = 5,
+            enablePlaceholders = false,
+            initialLoadSize = 10
+        )
+
+        return Pager(
+            config = pagingConfig,
+            pagingSourceFactory = {
+                PetPagingSource(
+                    firestore = firestore,
+                    shelterId = shelterId,
+                    filter = filter,
+                    shelterLocation = shelterLocation,
+                    radiusKm = 10.0,
+                    nearbyOnly = true
+                )
+            }
+        ).flow
+    }
+
+    override fun getPetsExcludingNearby(
+        shelterId: String?,
+        filter: PetFilterState?,
+        shelterLocation: ShelterLocation
+    ): Flow<PagingData<Pet>> {
+        val pagingConfig = PagingConfig(
+            pageSize = 10,
+            prefetchDistance = 5,
+            enablePlaceholders = false,
+            initialLoadSize = 10
+        )
+
+        return Pager(
+            config = pagingConfig,
+            pagingSourceFactory = {
+                PetPagingSource(
+                    firestore = firestore,
+                    shelterId = shelterId,
+                    filter = filter,
+                    shelterLocation = shelterLocation,
+                    radiusKm = 10.0,
+                    excludeNearby = true
+                )
+            }
+        ).flow
+    }
+
     override fun getPetById(id: String, shelterId: String?): Flow<Resource<Pet>> {
         return flow {
             emit(Resource.Loading())

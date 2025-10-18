@@ -57,24 +57,63 @@ class ExploreViewModel @Inject constructor(
     private val _userLocation = MutableStateFlow<ShelterLocation?>(null)
     val userLocation = _userLocation.asStateFlow()
 
+    // Flow for nearby pets (within radius)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val nearbyPets: Flow<PagingData<Pet>> = combine(authState, filterState, isLocationFilterActive, userLocation) {
+            state, filter, locationActive, location ->
+        LocationFilterParams(state, filter, locationActive, location)
+    }.flatMapLatest { params: LocationFilterParams ->
+        if (params.locationActive && params.location != null) {
+            if (!params.state?.uuid.isNullOrEmpty()) {
+                petUseCase.getPetsNearby(params.state.uuid, params.filter, params.location)
+            } else {
+                petUseCase.getPetsNearby(null, params.filter, params.location)
+            }
+        } else {
+            kotlinx.coroutines.flow.flowOf(PagingData.empty<Pet>())
+        }
+    }.cachedIn(viewModelScope)
+
+    // Flow for other pets (excluding nearby pets)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val otherPets: Flow<PagingData<Pet>> = combine(authState, filterState, isLocationFilterActive, userLocation) {
+            state, filter, locationActive, location ->
+        LocationFilterParams(state, filter, locationActive, location)
+    }.flatMapLatest { params: LocationFilterParams ->
+        if (params.locationActive && params.location != null) {
+            if (!params.state?.uuid.isNullOrEmpty()) {
+                petUseCase.getPetsExcludingNearby(params.state.uuid, params.filter, params.location)
+            } else {
+                petUseCase.getPetsExcludingNearby(null, params.filter, params.location)
+            }
+        } else {
+            kotlinx.coroutines.flow.flowOf(PagingData.empty<Pet>())
+        }
+    }.cachedIn(viewModelScope)
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val pets: Flow<PagingData<Pet>> = combine(authState, filterState, isLocationFilterActive, userLocation) {
             state, filter, locationActive, location ->
         LocationFilterParams(state, filter, locationActive, location)
-    }.flatMapLatest { params ->
-        if (!params.state?.uuid.isNullOrEmpty()) {
-            initializePetsFlow(
-                shelterId = params.state.uuid,
-                filter = params.filter,
-                useLocation = params.locationActive,
-                location = params.location,
-            )
+    }.flatMapLatest { params: LocationFilterParams ->
+        // Only use this flow when location filter is NOT active
+        if (!params.locationActive) {
+            if (!params.state?.uuid.isNullOrEmpty()) {
+                initializePetsFlow(
+                    shelterId = params.state.uuid,
+                    filter = params.filter,
+                    useLocation = false,
+                    location = null,
+                )
+            } else {
+                initializePetsFlow(
+                    filter = params.filter,
+                    useLocation = false,
+                    location = null,
+                )
+            }
         } else {
-            initializePetsFlow(
-                filter = params.filter,
-                useLocation = params.locationActive,
-                location = params.location,
-            )
+            kotlinx.coroutines.flow.flowOf(PagingData.empty<Pet>())
         }
     }.cachedIn(viewModelScope)
 

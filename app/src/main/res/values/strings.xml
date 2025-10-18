@@ -67,6 +67,10 @@
     <string name="communities">Communities</string>
     <string name="assistant">Assistant</string>
 
+    <!--  Explore Screen Sections  -->
+    <string name="nearby_pets">Nearby Pets</string>
+    <string name="other_pets">Other Pets</string>
+
     <!--  Pet Category  -->
     <string name="pet_c_all">All</string>
     <string name="pet_c_dog">Dog</string>

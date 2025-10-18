@@ -25,7 +25,9 @@ class PetPagingSource(
     private val shelterId: String? = null,
     private val filter: PetFilterState? = null,
     private val shelterLocation: ShelterLocation? = null,
-    private val radiusKm: Double = 10.0
+    private val radiusKm: Double = 10.0,
+    private val nearbyOnly: Boolean = false,
+    private val excludeNearby: Boolean = false
 ): PagingSource<DocumentSnapshot, Pet>() {
 
     private fun calculateDistanceKm(
@@ -170,7 +172,93 @@ class PetPagingSource(
             Log.d("PetPagingSource", "Pets after merging views/favorites: ${updatedPetsWithFavorites.size}")
 
             val finalPets: List<Pet>
-            if (shelterLocation != null) {
+            if (shelterLocation != null && (nearbyOnly || excludeNearby)) {
+                Log.d("PetPagingSource", "Applying geofencing filter. Radius: $radiusKm km, nearbyOnly: $nearbyOnly, excludeNearby: $excludeNearby")
+
+                val volunteerUuids = updatedPetsWithFavorites.mapNotNull { extractIdFromPath(it.volunteer) }.distinct()
+                Log.d("PetPagingSource", "Unique Volunteer UUIDs to fetch location for: $volunteerUuids")
+
+                val volunteerLocations = mutableMapOf<String, VolunteerLocation?>()
+
+                if (volunteerUuids.isNotEmpty()) {
+                    val volunteerBatches = volunteerUuids.chunked(10)
+                    for (batch in volunteerBatches) {
+                        try {
+                            val volunteersSnapshot = firestore.collection(FirebaseKeys.VOLUNTEER_COLLECTION)
+                                .whereIn("uuid", batch)
+                                .get()
+                                .await()
+                            for (doc in volunteersSnapshot.documents) {
+                                val volunteer = doc.toObject(Volunteer::class.java)
+                                if (volunteer?.uuid != null) {
+                                    volunteerLocations[volunteer.uuid] = volunteer.location
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("PetPagingSource", "Error fetching volunteer locations for batch: $batch", e)
+                        }
+                    }
+                }
+                Log.d("PetPagingSource", "Fetched volunteer locations map: $volunteerLocations")
+
+                if (nearbyOnly) {
+                    // Show only pets within radius
+                    val petsWithDistance = updatedPetsWithFavorites.mapNotNull { pet ->
+                        val volunteerUuid = extractIdFromPath(pet.volunteer)
+                        if (volunteerUuid != null) {
+                            val location = volunteerLocations[volunteerUuid]
+                            if (location?.latitude != null && location.longitude != null) {
+                                val distance = calculateDistanceKm(
+                                    shelterLocation.latitude, shelterLocation.longitude,
+                                    location.latitude, location.longitude
+                                )
+                                if (distance <= radiusKm) {
+                                    Pair(pet, distance)
+                                } else {
+                                    null
+                                }
+                            } else {
+                                null
+                            }
+                        } else {
+                            null
+                        }
+                    }
+                    Log.d("PetPagingSource", "Found ${petsWithDistance.size} pets within ${radiusKm}km")
+
+                    finalPets = petsWithDistance
+                        .sortedBy { it.second }
+                        .take(requestedPageSize)
+                        .map { it.first }
+                    Log.d("PetPagingSource", "Final nearby pets: ${finalPets.size}")
+                } else {
+                    // excludeNearby = true: Show only pets OUTSIDE radius
+                    val petsOutsideRadius = updatedPetsWithFavorites.filter { pet ->
+                        val volunteerUuid = extractIdFromPath(pet.volunteer)
+                        if (volunteerUuid != null) {
+                            val location = volunteerLocations[volunteerUuid]
+                            if (location?.latitude != null && location.longitude != null) {
+                                val distance = calculateDistanceKm(
+                                    shelterLocation.latitude, shelterLocation.longitude,
+                                    location.latitude, location.longitude
+                                )
+                                distance > radiusKm
+                            } else {
+                                // Include pets without location
+                                true
+                            }
+                        } else {
+                            // Include pets without volunteer reference
+                            true
+                        }
+                    }
+                    Log.d("PetPagingSource", "Found ${petsOutsideRadius.size} pets outside ${radiusKm}km")
+
+                    finalPets = petsOutsideRadius.take(requestedPageSize)
+                    Log.d("PetPagingSource", "Final other pets (excluding nearby): ${finalPets.size}")
+                }
+            } else if (shelterLocation != null) {
+                // Legacy behavior: show all pets with location filter
                 Log.d("PetPagingSource", "Applying geofencing filter. Radius: $radiusKm km")
 
                 val volunteerUuids = updatedPetsWithFavorites.mapNotNull { extractIdFromPath(it.volunteer) }.distinct()

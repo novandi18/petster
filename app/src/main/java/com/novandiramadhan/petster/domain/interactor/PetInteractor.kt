@@ -32,6 +32,20 @@ class PetInteractor @Inject constructor(
     ): Flow<PagingData<Pet>> =
         petRepository.getPets(shelterId, filter, shelterLocation)
 
+    override fun getPetsNearby(
+        shelterId: String?,
+        filter: PetFilterState?,
+        shelterLocation: ShelterLocation
+    ): Flow<PagingData<Pet>> =
+        petRepository.getPetsNearby(shelterId, filter, shelterLocation)
+
+    override fun getPetsExcludingNearby(
+        shelterId: String?,
+        filter: PetFilterState?,
+        shelterLocation: ShelterLocation
+    ): Flow<PagingData<Pet>> =
+        petRepository.getPetsExcludingNearby(shelterId, filter, shelterLocation)
+
     override fun getPetById(id: String, shelterId: String?): Flow<Resource<Pet>> =
         petRepository.getPetById(id, shelterId)
 
