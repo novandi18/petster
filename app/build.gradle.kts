@@ -70,6 +70,11 @@ android {
             freeCompilerArgs.set(listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode"))
         }
     }
+
+    tasks.withType<JavaCompile> {
+        options.compilerArgs.add("-Xlint:-processing")
+    }
+
     buildFeatures {
         compose = true
         buildConfig = true
