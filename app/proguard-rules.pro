@@ -96,6 +96,43 @@
 -keepattributes Signature
 -keepattributes *Annotation*
 
+# Keep all Firestore domain models and their members
+-keep class com.novandiramadhan.petster.domain.model.** { *; }
+
+# Keep all constructors for Firestore models
+-keepclassmembers class com.novandiramadhan.petster.domain.model.** {
+    <init>(...);
+}
+
+# Keep all fields for Firestore serialization/deserialization
+-keepclassmembers class com.novandiramadhan.petster.domain.model.** {
+    <fields>;
+}
+
+# Keep getter and setter methods for Firestore models
+-keepclassmembers class com.novandiramadhan.petster.domain.model.** {
+    public void set*(***);
+    public *** get*();
+    public boolean is*();
+}
+
+# Keep Firestore annotations
+-keepattributes RuntimeVisibleAnnotations
+-keep class com.google.firebase.firestore.PropertyName
+-keep @com.google.firebase.firestore.PropertyName class *
+-keepclassmembers class * {
+    @com.google.firebase.firestore.PropertyName *;
+}
+
+# Keep ServerTimestamp annotation
+-keep class com.google.firebase.firestore.ServerTimestamp
+-keepclassmembers class * {
+    @com.google.firebase.firestore.ServerTimestamp *;
+}
+
+# Keep Timestamp class
+-keep class com.google.firebase.Timestamp { *; }
+
 ###############################################
 # DATASTORE
 ###############################################
@@ -158,6 +195,7 @@
 ###############################################
 # Keep BuildConfig
 -keep class com.novandiramadhan.petster.BuildConfig { *; }
+-dontwarn com.novandiramadhan.petster.BuildConfig
 
 # Keep kotlin metadata
 -keepattributes RuntimeVisibleAnnotations, RuntimeInvisibleAnnotations
