@@ -52,7 +52,7 @@ Model-View-ViewModel (MVVM)
 
 ## Demo App
 You can download a demo version of the Petster application (APK) to try it out directly on your Android device.
-[Download Petster Demo APK from Google Drive](https://drive.google.com/file/d/13l1GKsmoVAgaeqMb_pHlBqnjjgjlB9eN/view?usp=sharing)
+[Download Petster Demo APK from Google Drive](https://drive.google.com/file/d/1fyn9FJ1yUS_xixozvii4klekfu61tDXo/view?usp=sharing)
 
 ## Contributing
 Contributions are welcome! We appreciate any help making Petster better.
